@@ -159,90 +159,100 @@
         if (search(target, [], 0)) return best;
         return null;
     }
-
-    function calc() {
-        const res = document.getElementById('results');
-        const cat = document.getElementById('cat').value;
-        let stock = { 144: parseInt(document.getElementById('s12').value)||0, 180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) };
-        res.innerHTML = "<h3>Results</h3>";
-        
-        let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
-        let req = [];
-        const rows = document.getElementsByClassName('req-row');
-        for(let row of rows) {
-            let val = parseFloat(row.querySelector('.sz').value);
-            let q = parseInt(row.querySelector('.qty').value);
-            let unit = row.querySelector('.unit-toggle').dataset.unit || 'in';
-            if(val > 0) {
-                let sizeInInches = (unit === 'ft') ? val * 12 : val;
-                while(q--) req.push(sizeInInches);
-            }
+function calc() {
+    const res = document.getElementById('results');
+    const cat = document.getElementById('cat').value;
+    let stock = { 
+        144: parseInt(document.getElementById('s12').value)||0, 
+        180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 
+        240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) 
+    };
+    res.innerHTML = "<h3>Results</h3>";
+    
+    let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
+    let req = [];
+    const rows = document.getElementsByClassName('req-row');
+    for(let row of rows) {
+        let val = parseFloat(row.querySelector('.sz').value);
+        let q = parseInt(row.querySelector('.qty').value);
+        let unit = row.querySelector('.unit-toggle').dataset.unit || 'in';
+        if(val > 0) {
+            let sizeInInches = (unit === 'ft') ? val * 12 : val;
+            while(q--) req.push(sizeInInches);
         }
-        req.sort((a,b)=>b-a);
-
-        let plan = [];
-        const safe = (r) => (r <= 4 || r >= 36);
-
-        for (let i = 0; i < scrap.length; i++) {
-            let comb = findPerfect(scrap[i], req);
-            if (comb) {
-                plan.push({t:'OLD SCRAP', o:scrap[i], c:comb, r:0, s:true});
-                comb.forEach(v => req.splice(req.indexOf(v), 1));
-                scrap.splice(i, 1); i--;
-            }
-        }
-
-        scrap.sort((a,b)=>a-b);
-        for(let i=0; i<scrap.length; i++){
-            let rem=scrap[i]; let cuts=[];
-            for(let j=0; j<req.length; j++){
-                if(req[j] <= rem){
-                    let tr = rem - req[j]; let sub = [...req]; sub.splice(j,1);
-                    for(let k=0; k<sub.length; k++){ if(sub[k]<=tr) tr-=sub[k]; }
-                    if(safe(tr)){ rem-=req[j]; cuts.push(req[j]); req.splice(j,1); j--; }
-                }
-            }
-            if(cuts.length > 0){ plan.push({t:'OLD SCRAP', o:scrap[i], c:cuts, r:rem, s:safe(rem)}); scrap.splice(i,1); i--; }
-        }
-
-        let fs = Object.keys(stock).map(Number).sort((a,b)=>b-a);
-        for (let p of fs) {
-            while (stock[p] > 0) {
-                let comb = findPerfect(p, req);
-                if (comb) {
-                    plan.push({t:(p/12)+'FT PIPE', o:p, c:comb, r:0, s:true});
-                    comb.forEach(v => req.splice(req.indexOf(v), 1));
-                    stock[p]--;
-                } else break;
-            }
-        }
-
-        while(req.length > 0){
-            let best = null;
-            let av = fs.filter(s=>stock[s]>0).sort((a,b)=>a-b);
-            if(!av.length) break;
-            for(let p of av){
-                let trq=[...req]; let c=[]; let r=p;
-                for(let j=0; j<trq.length; j++){ if(trq[j]<=r){ r-=trq[j]; c.push(trq[j]); trq.splice(j,1); j--; } }
-                if(!best || (safe(r) && !safe(best.r)) || (safe(r) && r < best.r) || (!safe(r) && r > best.r)) best = {o:p, c:c, r:r, s:safe(r)};
-            }
-            plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
-            best.c.forEach(v=>req.splice(req.indexOf(v),1)); stock[best.o]--;
-        }
-
-        plan.forEach(p => {
-            res.innerHTML += `<div class="card">
-                <span class="type">${p.t}</span>
-                <div class="pick">${p.o}"</div>
-                <div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div>
-                <div class="status">
-                    <span style="color:${p.s? 'var(--gold)':'red'}">${p.s?'SAFE':'CHARGE FULL'}</span>
-                    <span>Waste: ${p.r}"</span>
-                </div>
-            </div>`;
-        });
-        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
+    req.sort((a,b)=>b-a);
+
+    let plan = [];
+    const safe = (r) => (r <= 4 || r >= 36);
+
+    // --- STEP 1: PERFECT SCRAP MATCH (PRIORITY #1 TO SAVE FRESH STOCK) ---
+    // This pairs 48+36 into the 84" scrap immediately.
+    for (let i = 0; i < scrap.length; i++) {
+        let comb = findPerfect(scrap[i], req);
+        if (comb) {
+            plan.push({t:'OLD SCRAP', o:scrap[i], c:comb, r:0, s:true});
+            comb.forEach(v => req.splice(req.indexOf(v), 1));
+            scrap.splice(i, 1); i--;
+        }
+    }
+
+    // --- STEP 2: PERFECT FRESH MATCH (PRIORITY #2 TO MINIMIZE CUTS) ---
+    // This pairs 72+72 into a 144" pipe immediately.
+    let freshSizes = Object.keys(stock).map(Number).sort((a,b)=>a-b); // Check 12ft before 15ft
+    for (let p of freshSizes) {
+        while (stock[p] > 0) {
+            let comb = findPerfect(p, req);
+            if (comb) {
+                plan.push({t:(p/12)+'FT PIPE', o:p, c:comb, r:0, s:true});
+                comb.forEach(v => req.splice(req.indexOf(v), 1));
+                stock[p]--;
+            } else break;
+        }
+    }
+
+    // --- STEP 3: REMAINING SCRAPS (SAFE ONLY) ---
+    scrap.sort((a,b)=>a-b);
+    for(let i=0; i<scrap.length; i++){
+        let rem=scrap[i]; let cuts=[];
+        for(let j=0; j<req.length; j++){
+            if(req[j] <= rem){
+                let tr = rem - req[j]; let sub = [...req]; sub.splice(j,1);
+                for(let k=0; k<sub.length; k++){ if(sub[k]<=tr) tr-=sub[k]; }
+                if(safe(tr)){ rem-=req[j]; cuts.push(req[j]); req.splice(j,1); j--; }
+            }
+        }
+        if(cuts.length > 0){ plan.push({t:'OLD SCRAP', o:scrap[i], c:cuts, r:rem, s:safe(rem)}); scrap.splice(i,1); i--; }
+    }
+
+    // --- STEP 4: REMAINING FRESH PIPES ---
+    while(req.length > 0){
+        let best = null;
+        let av = freshSizes.filter(s=>stock[s]>0).sort((a,b)=>a-b);
+        if(!av.length) break;
+        for(let p of av) {
+            let trq=[...req]; let c=[]; let r=p;
+            for(let j=0; j<trq.length; j++){ if(trq[j]<=r){ r-=trq[j]; c.push(trq[j]); trq.splice(j,1); j--; } }
+            if(!best || (safe(r) && !safe(best.r)) || (safe(r) && r < best.r) || (!safe(r) && r > best.r)) best = {o:p, c:c, r:r, s:safe(r)};
+        }
+        plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
+        best.c.forEach(v=>req.splice(req.indexOf(v),1)); stock[best.o]--;
+    }
+
+    // --- RENDER ---
+    plan.forEach(p => {
+        res.innerHTML += `<div class="card">
+            <span class="type">${p.t}</span>
+            <div class="pick">${p.o}"</div>
+            <div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div>
+            <div class="status">
+                <span style="color:${p.s? 'var(--gold)':'red'}">${p.s?'SAFE':'CHARGE FULL'}</span>
+                <span>Waste: ${p.r}"</span>
+            </div>
+        </div>`;
+    });
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 </body>
 </html>
