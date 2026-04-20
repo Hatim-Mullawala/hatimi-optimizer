@@ -1,0 +1,16 @@
+{
+  "name": "Hatimi Hardware QuickCut",
+  "short_name": "HatimiCut",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#b38b2d",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/192/circular-saw.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
