@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hatimi Hardware | QuickCut</title>
     <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/circular-saw.png">
 <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/circular-saw.png">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Hatimi Cut">
-
-<link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hatimi Hardware | QuickCut</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #b38b2d; --dark: #1a1a1a; --gray: #f8f8f8; }
@@ -63,7 +61,127 @@
         .card .pick { font-size: 2.2rem; font-weight: 900; margin: 5px 0; color: var(--dark); }
         .card .cut-line { font-size: 1.2rem; color: #333; margin: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 12px 0; }
         .card .cut-line b { color: var(--gold); font-size: 1.4rem; }
-        .card .status { font-size: 0.8rem; margin-top: 10px; font-weight: 700; display: flex; justify-content: space-between; }
+      @media print {
+    @page { size: 4in 6in; margin: 3mm; }
+    
+    /* Hide everything except results */
+    header, .section, button, .btn-calc, .btn-print, .no-print-zone, .results-title { 
+        display: none !important; 
+    }
+
+    .dashboard { width: 100%; min-height: auto; margin: 0; padding: 0; }
+    
+    .print-header { display: block !important; text-align: center; margin-bottom: 8px; }
+    .print-header h2 { font-size: 14pt; font-weight: 900; margin: 0; color: black; }
+
+    /* The Grid Container */
+    #results {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr); /* Default to 2 columns */
+        gap: 5px;
+        width: 100%;
+    }
+
+    /* Logic for different pipe counts */
+    /* If only 1 pipe, make it full width */
+    #results:has(.card:nth-child(1):last-child) { grid-template-columns: 1fr; }
+    
+    /* If only 2 pipes, make them full width stacked */
+    #results:has(.card:nth-child(2):last-child) { grid-template-columns: 1fr; }
+
+    /* If 3 pipes: first one is full width, next two are side-by-side */
+    #results:has(.card:nth-child(3):last-child) .card:first-child {
+        grid-column: span 2;
+    }
+
+    .card { 
+        border: 2px solid black !important; 
+        padding: 5px !important; 
+        background: white !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        page-break-inside: avoid;
+    }
+
+    .card .type { font-size: 7pt; font-weight: bold; color: black; }
+    .card .pick { font-size: 16pt; font-weight: 900; color: black; margin: 0; line-height: 1; }
+    .card .cut-line { 
+        font-size: 10pt; 
+        border-top: 1px solid black; 
+        border-bottom: 1px solid black; 
+        margin: 4px 0; 
+        padding: 2px 0;
+        font-weight: bold;
+        color: black;
+    }
+    .card .status { font-size: 7pt; display: flex; justify-content: space-between; color: black; }
+}
+/* Styling the Results Header on Screen */
+.print-header {
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.print-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 0;
+    color: var(--dark);
+    font-size: 1.5rem;
+}
+
+.print-header p {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Restoring the "Calculation Results" Heading */
+.screen-only-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #888;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+.btn-print {
+    background: #333 !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 16px !important;
+    margin: 20px 0 !important;
+    border-radius: 12px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn-print:active {
+    transform: scale(0.96);
+    background: #000 !important;
+}
+/* Hide the extra header on the app screen */
+.print-header { display: none; }
+
+/* Show it only when printing */
+@media print {
+    .print-header { display: block !important; }
+}
     </style>
 </head>
 <body>
@@ -116,7 +234,11 @@
             </div>
             <button class="btn btn-add" onclick="addNeed()">+ Add New Size</button>
         </div>
-
+<div class="no-print-zone">
+    <button class="btn btn-print" onclick="window.print()">
+        <span style="margin-right: 8px;">🖨️</span> PRINT CUTTING PLAN
+    </button>
+</div>
         <div id="results" class="results-wrap"></div>
     </div>
 
@@ -155,7 +277,7 @@
     }
 
     function findPerfect(target, currentNeeds) {
-        let best = [];
+        let best = null;
         function search(rem, cuts, start) {
             if (rem === 0) { best = [...cuts]; return true; }
             for (let i = start; i < currentNeeds.length; i++) {
@@ -163,103 +285,87 @@
             }
             return false;
         }
-        if (search(target, [], 0)) return best;
-        return null;
+        search(target, [], 0); 
+        return best;
     }
 function calc() {
-    const res = document.getElementById('results');
-    const cat = document.getElementById('cat').value;
-    let stock = { 
-        144: parseInt(document.getElementById('s12').value)||0, 
-        180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 
-        240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) 
-    };
-    res.innerHTML = "<h3>Results</h3>";
-    
-    let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
-    let req = [];
-    const rows = document.getElementsByClassName('req-row');
-    for(let row of rows) {
-        let val = parseFloat(row.querySelector('.sz').value);
-        let q = parseInt(row.querySelector('.qty').value);
-        let unit = row.querySelector('.unit-toggle').dataset.unit || 'in';
-        if(val > 0) {
-            let sizeInInches = (unit === 'ft') ? val * 12 : val;
-            while(q--) req.push(sizeInInches);
+        const res = document.getElementById('results');
+        const cat = document.getElementById('cat').value;
+        
+        let stock = { 
+            144: parseInt(document.getElementById('s12').value)||0, 
+            180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 
+            240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) 
+        };
+        
+        let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
+        let req = [];
+        Array.from(document.getElementsByClassName('req-row')).forEach(row => {
+            let val = parseFloat(row.querySelector('.sz').value), 
+                q = parseInt(row.querySelector('.qty').value), 
+                unit = row.querySelector('.unit-toggle').dataset.unit;
+            if(val > 0) { let sz = (unit === 'ft') ? val * 12 : val; while(q--) req.push(sz); }
+        });
+        req.sort((a,b)=>b-a);
+
+        let plan = [];
+        const safe = (r) => (r <= 4 || r >= 36);
+
+        for (let i = 0; i < scrap.length; i++) {
+            let comb = findPerfect(scrap[i], req);
+            if (comb) { plan.push({t:'OLD SCRAP', o:scrap[i], c:comb, r:0, s:true}); comb.forEach(v => req.splice(req.indexOf(v), 1)); scrap.splice(i, 1); i--; }
         }
-    }
-    req.sort((a,b)=>b-a);
 
-    let plan = [];
-    const safe = (r) => (r <= 4 || r >= 36);
+        let freshSizes = Object.keys(stock).map(Number).sort((a,b)=>b-a);
+        while(req.length > 0){
+            let best = null;
+            let av = freshSizes.filter(s => stock[s] > 0).sort((a, b) => a - b);
+            if(!av.length) break;
 
-    // --- STEP 1: PERFECT SCRAP MATCH (PRIORITY #1 TO SAVE FRESH STOCK) ---
-    // This pairs 48+36 into the 84" scrap immediately.
-    for (let i = 0; i < scrap.length; i++) {
-        let comb = findPerfect(scrap[i], req);
-        if (comb) {
-            plan.push({t:'OLD SCRAP', o:scrap[i], c:comb, r:0, s:true});
-            comb.forEach(v => req.splice(req.indexOf(v), 1));
-            scrap.splice(i, 1); i--;
-        }
-    }
-
-    // --- STEP 2: PERFECT FRESH MATCH (PRIORITY #2 TO MINIMIZE CUTS) ---
-    // This pairs 72+72 into a 144" pipe immediately.
-    let freshSizes = Object.keys(stock).map(Number).sort((a,b)=>a-b); // Check 12ft before 15ft
-    for (let p of freshSizes) {
-        while (stock[p] > 0) {
-            let comb = findPerfect(p, req);
-            if (comb) {
-                plan.push({t:(p/12)+'FT PIPE', o:p, c:comb, r:0, s:true});
-                comb.forEach(v => req.splice(req.indexOf(v), 1));
-                stock[p]--;
+            for(let p of av) {
+                let trq = [...req], c = [], r = p;
+                for(let j=0; j<trq.length; j++){ 
+                    if(trq[j] <= r){ 
+                        let potentialWaste = r - trq[j];
+                        if (potentialWaste > 0 && potentialWaste < 36 && r >= 36) continue; 
+                        r -= trq[j]; c.push(trq[j]); trq.splice(j,1); j--; 
+                    } 
+                }
+                if(!best || (r === 0 && best.r !== 0) || (safe(r) && !safe(best.r)) || (safe(r) && p < best.o)) {
+                    best = {o: p, c: c, r: r, s: safe(r)};
+                }
+            }
+            if(best) {
+                plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
+                best.c.forEach(v => req.splice(req.indexOf(v),1)); 
+                stock[best.o]--;
             } else break;
         }
-    }
 
-    // --- STEP 3: REMAINING SCRAPS (SAFE ONLY) ---
-    scrap.sort((a,b)=>a-b);
-    for(let i=0; i<scrap.length; i++){
-        let rem=scrap[i]; let cuts=[];
-        for(let j=0; j<req.length; j++){
-            if(req[j] <= rem){
-                let tr = rem - req[j]; let sub = [...req]; sub.splice(j,1);
-                for(let k=0; k<sub.length; k++){ if(sub[k]<=tr) tr-=sub[k]; }
-                if(safe(tr)){ rem-=req[j]; cuts.push(req[j]); req.splice(j,1); j--; }
-            }
-        }
-        if(cuts.length > 0){ plan.push({t:'OLD SCRAP', o:scrap[i], c:cuts, r:rem, s:safe(rem)}); scrap.splice(i,1); i--; }
-    }
+        // --- RENDER (Optimized for space) ---
+let outputHtml = `
+    <div class="print-header">
+        <h2>HATIMI HARDWARE</h2>
+    </div>
+    <h3 class="results-title screen-only">Results</h3>
+`;
 
-    // --- STEP 4: REMAINING FRESH PIPES ---
-    while(req.length > 0){
-        let best = null;
-        let av = freshSizes.filter(s=>stock[s]>0).sort((a,b)=>a-b);
-        if(!av.length) break;
-        for(let p of av) {
-            let trq=[...req]; let c=[]; let r=p;
-            for(let j=0; j<trq.length; j++){ if(trq[j]<=r){ r-=trq[j]; c.push(trq[j]); trq.splice(j,1); j--; } }
-            if(!best || (safe(r) && !safe(best.r)) || (safe(r) && r < best.r) || (!safe(r) && r > best.r)) best = {o:p, c:c, r:r, s:safe(r)};
-        }
-        plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
-        best.c.forEach(v=>req.splice(req.indexOf(v),1)); stock[best.o]--;
-    }
+        plan.forEach(p => {
+            outputHtml += `
+            <div class="card">
+                <span class="type">${p.t}</span>
+                <div class="pick">${p.o}"</div>
+                <div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div>
+                <div class="status">
+                    <span style="color:${p.s ? 'var(--gold)' : 'red'}">${p.s ? 'SAFE' : 'CHARGE FULL'}</span>
+                    <span>Waste: ${p.r}"</span>
+                </div>
+            </div>`;
+        });
 
-    // --- RENDER ---
-    plan.forEach(p => {
-        res.innerHTML += `<div class="card">
-            <span class="type">${p.t}</span>
-            <div class="pick">${p.o}"</div>
-            <div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div>
-            <div class="status">
-                <span style="color:${p.s? 'var(--gold)':'red'}">${p.s?'SAFE':'CHARGE FULL'}</span>
-                <span>Waste: ${p.r}"</span>
-            </div>
-        </div>`;
-    });
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-}
+        res.innerHTML = outputHtml;
+        res.scrollIntoView({ behavior: 'smooth' });
+    }
 </script>
 </body>
 </html>
