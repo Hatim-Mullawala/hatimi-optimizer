@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hatimi Hardware | QuickCut</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #b38b2d; --dark: #1a1a1a; --gray: #f8f8f8; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Montserrat', sans-serif; background: #eee; margin: 0; padding: 0; color: var(--dark); }
+        
+        .dashboard { width: 100%; max-width: 500px; margin: auto; background: white; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        header { background: var(--dark); color: white; padding: 20px; border-bottom: 4px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        header h1 { margin: 0; font-size: 1.1rem; letter-spacing: 1px; text-transform: uppercase; }
+        header h1 span { color: var(--gold); }
+        
+        .content { padding: 15px; flex-grow: 1; padding-bottom: 80px; }
+        
+        .section { background: var(--gray); padding: 20px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 15px; }
+        h3 { margin-top: 0; font-size: 0.8rem; text-transform: uppercase; color: #888; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 15px; font-weight: 800; }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; color: #555; }
+        
+        select, input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; font-family: inherit; background: white; }
+        
+        .stock-row { display: grid; grid-template-columns: 60px 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .stock-row span { font-weight: 800; font-size: 0.9rem; }
+
+        .req-row { display: grid; grid-template-columns: 1fr 70px 90px; gap: 8px; margin-bottom: 12px; }
+        .unit-toggle { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid var(--gold); height: 50px; background: white; }
+        .unit-btn { flex: 1; border: none; background: #fff; font-size: 0.7rem; font-weight: 800; color: var(--gold); cursor: pointer; }
+        .unit-btn.active { background: var(--gold); color: white; }
+
+        .btn { border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; width: 100%; font-family: inherit; }
+        .btn-add { background: white; color: var(--gold); border: 2px solid var(--gold); margin-top: 5px; }
+        .btn-calc { 
+            background: var(--gold); 
+            color: white; 
+            font-size: 1.1rem; 
+            border-radius: 0; 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); 
+        }
+        
+        .results-wrap { padding: 5px 0; background: #fff; }
+        .card { border: 1px solid #eee; padding: 20px; text-align: center; border-radius: 12px; background: #fafafa; border-top: 6px solid var(--gold); margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card .type { font-size: 0.7rem; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 5px; display: block;}
+        .card .pick { font-size: 2.2rem; font-weight: 900; margin: 5px 0; color: var(--dark); }
+        .card .cut-line { font-size: 1.2rem; color: #333; margin: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 12px 0; }
+        .card .cut-line b { color: var(--gold); font-size: 1.4rem; }
+        .card .status { font-size: 0.8rem; margin-top: 10px; font-weight: 700; display: flex; justify-content: space-between; }
+        
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <header>
+        <h1>HATIMI <span>HARDWARE</span></h1>
+    </header>
+
+    <div class="content">
+        <div class="section">
+            <h3>1. Inventory Stock</h3>
+            <div class="input-group">
+                <label>Category</label>
+                <select id="cat" onchange="toggleStock()">
+                    <option value="1h">1" Heavy Duty (12,15,20ft)</option>
+                    <option value="1l">1" Light Duty (12ft)</option>
+                    <option value="1c">1" Color Coated (12ft)</option>
+                    <option value="34h">3/4" Heavy Duty (12ft)</option>
+                    <option value="34l">3/4" Light Duty (12ft)</option>
+                </select>
+            </div>
+            
+            <div class="stock-row"><span>12ft:</span><input type="number" id="s12" value="10"></div>
+            <div id="ex_fields">
+                <div class="stock-row"><span>15ft:</span><input type="number" id="s15" value="5"></div>
+                <div class="stock-row"><span>20ft:</span><input type="number" id="s20" value="5"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>2. Shop Scraps (Inches)</h3>
+            <div id="scraps">
+                <input type="number" class="sc" placeholder="Ex: 84">
+            </div>
+            <button class="btn btn-add" onclick="addScrap()">+ Add Another Scrap</button>
+        </div>
+
+        <div class="section">
+            <h3>3. Requirements</h3>
+            <div id="needs">
+                <div class="req-row">
+                    <input type="number" class="sz" placeholder="Size">
+                    <input type="number" class="qty" value="1">
+                    <div class="unit-toggle" data-unit="in">
+                        <button class="unit-btn active" onclick="setUnit(this, 'in')">IN</button>
+                        <button class="unit-btn" onclick="setUnit(this, 'ft')">FT</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-add" onclick="addNeed()">+ Add New Size</button>
+        </div>
+
+        <div id="results" class="results-wrap"></div>
+    </div>
+
+    <button class="btn btn-calc" onclick="calc()">Calculate Cutting Plan</button>
+</div>
+
+<script>
+    function toggleStock() {
+        const isH = document.getElementById('cat').value === '1h';
+        document.getElementById('ex_fields').style.display = isH ? 'block' : 'none';
+    }
+
+    function addScrap() { 
+        const i = document.createElement('input'); 
+        i.className='sc'; i.type='number'; i.placeholder="Inches"; i.style.marginTop="10px";
+        document.getElementById('scraps').appendChild(i); 
+    }
+    
+    function setUnit(btn, unit) {
+        const parent = btn.parentElement;
+        Array.from(parent.children).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        parent.dataset.unit = unit;
+    }
+
+    function addNeed() { 
+        const d = document.createElement('div'); d.className='req-row';
+        d.innerHTML = `
+            <input type="number" class="sz" placeholder="Size">
+            <input type="number" class="qty" value="1">
+            <div class="unit-toggle" data-unit="in">
+                <button class="unit-btn active" onclick="setUnit(this, 'in')">IN</button>
+                <button class="unit-btn" onclick="setUnit(this, 'ft')">FT</button>
+            </div>`;
+        document.getElementById('needs').appendChild(d);
+    }
+
+    function findPerfect(target, currentNeeds) {
+        let best = [];
+        function search(rem, cuts, start) {
+            if (rem === 0) { best = [...cuts]; return true; }
+            for (let i = start; i < currentNeeds.length; i++) {
+                if (currentNeeds[i] <= rem) if (search(rem - currentNeeds[i], [...cuts, currentNeeds[i]], i + 1)) return true;
+            }
+            return false;
+        }
+        if (search(target, [], 0)) return best;
+        return null;
+    }
+function calc() {
+    const res = document.getElementById('results');
+    const cat = document.getElementById('cat').value;
+    let stock = { 
+        144: parseInt(document.getElementById('s12').value)||0, 
+        180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 
+        240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) 
+    };
+    res.innerHTML = "<h3>Results</h3>";
+    
+    let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
+    let req = [];
+    const rows = document.getElementsByClassName('req-row');
+    for(let row of rows) {
+        let val = parseFloat(row.querySelector('.sz').value);
+        let q = parseInt(row.querySelector('.qty').value);
+        let unit = row.querySelector('.unit-toggle').dataset.unit || 'in';
+        if(val > 0) {
+            let sizeInInches = (unit === 'ft') ? val * 12 : val;
+            while(q--) req.push(sizeInInches);
+        }
+    }
+    req.sort((a,b)=>b-a);
+
+    let plan = [];
+    const safe = (r) => (r <= 4 || r >= 36);
+
+    // --- STEP 1: PERFECT SCRAP MATCH (PRIORITY #1 TO SAVE FRESH STOCK) ---
+    // This pairs 48+36 into the 84" scrap immediately.
+    for (let i = 0; i < scrap.length; i++) {
+        let comb = findPerfect(scrap[i], req);
+        if (comb) {
+            plan.push({t:'OLD SCRAP', o:scrap[i], c:comb, r:0, s:true});
+            comb.forEach(v => req.splice(req.indexOf(v), 1));
+            scrap.splice(i, 1); i--;
+        }
+    }
+
+    // --- STEP 2: PERFECT FRESH MATCH (PRIORITY #2 TO MINIMIZE CUTS) ---
+    // This pairs 72+72 into a 144" pipe immediately.
+    let freshSizes = Object.keys(stock).map(Number).sort((a,b)=>b-a);// Check 12ft before 15ft
+    for (let p of freshSizes) {
+        while (stock[p] > 0) {
+            let comb = findPerfect(p, req);
+            if (comb) {
+                plan.push({t:(p/12)+'FT PIPE', o:p, c:comb, r:0, s:true});
+                comb.forEach(v => req.splice(req.indexOf(v), 1));
+                stock[p]--;
+            } else break;
+        }
+    }
+
+    // --- STEP 3: REMAINING SCRAPS (SAFE ONLY) ---
+    scrap.sort((a,b)=>a-b);
+    for(let i=0; i<scrap.length; i++){
+        let rem=scrap[i]; let cuts=[];
+        for(let j=0; j<req.length; j++){
+            if(req[j] <= rem){
+                let tr = rem - req[j]; let sub = [...req]; sub.splice(j,1);
+                for(let k=0; k<sub.length; k++){ if(sub[k]<=tr) tr-=sub[k]; }
+                if(safe(tr)){ rem-=req[j]; cuts.push(req[j]); req.splice(j,1); j--; }
+            }
+        }
+        if(cuts.length > 0){ plan.push({t:'OLD SCRAP', o:scrap[i], c:cuts, r:rem, s:safe(rem)}); scrap.splice(i,1); i--; }
+    }
+
+    // --- STEP 4: SMART FIT FRESH PIPES (MINIMIZE CUTS & WASTE) ---
+    while(req.length > 0){
+        let best = null;
+        // Check all available sizes to find the one with the least waste
+        let av = freshSizes.filter(s => stock[s] > 0);
+        if(!av.length) break;
+
+        for(let p of av) {
+            let trq = [...req]; 
+            let c = []; 
+            let r = p;
+            
+            // Try to pack as many pieces as possible into this specific pipe size
+            for(let j=0; j<trq.length; j++){ 
+                if(trq[j] <= r){ 
+                    r -= trq[j]; 
+                    c.push(trq[j]); 
+                    trq.splice(j,1); 
+                    j--; 
+                } 
+            }
+            
+            // Priority: 1. Safe waste (0" or >36"), 2. Smallest waste possible
+            if(!best || 
+               (r === 0 && best.r !== 0) || 
+               (safe(r) && !safe(best.r)) || 
+               (safe(r) && r < best.r && best.r !== 0) ||
+               (!safe(r) && r > best.r)) {
+                best = {o:p, c:c, r:r, s:safe(r)};
+            }
+        }
+
+        if(best) {
+            plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
+            best.c.forEach(v => req.splice(req.indexOf(v),1)); 
+            stock[best.o]--;
+        } else break;
+    }
+
+    // --- RENDER ---
+    plan.forEach(p => {
+        res.innerHTML += `<div class="card">
+            <span class="type">${p.t}</span>
+            <div class="pick">${p.o}"</div>
+            <div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div>
+            <div class="status">
+                <span style="color:${p.s? 'var(--gold)':'red'}">${p.s?'SAFE':'CHARGE FULL'}</span>
+                <span>Waste: ${p.r}"</span>
+            </div>
+        </div>`;
+    });
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
