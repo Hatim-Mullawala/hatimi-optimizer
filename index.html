@@ -125,81 +125,130 @@
     }
 
     function calc() {
-        const res = document.getElementById('results');
-        const cat = document.getElementById('cat').value;
-        let stock = { 144: parseInt(document.getElementById('s12').value)||0, 180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) };
-        let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
-        let req = [];
-        Array.from(document.getElementsByClassName('req-row')).forEach(row => {
-            let val = parseFloat(row.querySelector('.sz').value), q = parseInt(row.querySelector('.qty').value), unit = row.querySelector('.unit-toggle').dataset.unit;
-            if(val > 0) { let sz = (unit === 'ft') ? val * 12 : val; while(q--) req.push(sz); }
-        });
-        req.sort((a,b)=>b-a);
-        let plan = [];
-        const safe = (r) => (r <= 5 || r >= 36);
+    const res = document.getElementById('results');
+    const cat = document.getElementById('cat').value;
+    
+    // Inventory setup
+    let stock = { 
+        144: parseInt(document.getElementById('s12').value)||0, 
+        180: (cat==='1h'?parseInt(document.getElementById('s15').value)||0:0), 
+        240: (cat==='1h'?parseInt(document.getElementById('s20').value)||0:0) 
+    };
+    
+    // Scraps and Requirements setup
+    let scrap = Array.from(document.getElementsByClassName('sc')).map(i=>parseFloat(i.value)).filter(v=>v>0);
+    let req = [];
+    Array.from(document.getElementsByClassName('req-row')).forEach(row => {
+        let val = parseFloat(row.querySelector('.sz').value), 
+            q = parseInt(row.querySelector('.qty').value), 
+            unit = row.querySelector('.unit-toggle').dataset.unit;
+        if(val > 0) { 
+            let sz = (unit === 'ft') ? val * 12 : val; 
+            while(q--) req.push(sz); 
+        }
+    });
+    req.sort((a,b)=>b-a);
 
-        // STEP 1: ZERO WASTE FRESH PIPES FIRST
-        let freshSizes = Object.keys(stock).map(Number).sort((a,b)=>a-b);
-        for (let p of freshSizes) {
-            while (stock[p] > 0) {
+    let plan = [];
+    const safe = (r) => (r <= 5 || r >= 36);
+
+    // --- STEP 1: GLOBAL ZERO WASTE CHECK (Corrected Logic) ---
+    let freshSizes = Object.keys(stock).map(Number).sort((a,b)=>a-b);
+    let pipesUsed = true;
+    while (pipesUsed) {
+        pipesUsed = false;
+        let bestMatch = null;
+
+        for (let p of freshSizes) { // Corrected from freshSizeS
+            if (stock[p] > 0) {
                 let comb = findPerfect(p, req);
                 if (comb) {
-                    plan.push({t:(p/12)+'FT PIPE', o:p, c:comb, r:0, s:true});
-                    comb.forEach(v => req.splice(req.indexOf(v), 1)); stock[p]--;
-                } else break;
-            }
-        }
-
-        // STEP 2: USE SCRAPS
-        scrap.sort((a, b) => a - b); 
-        for (let i = 0; i < scrap.length; i++) {
-            let sVal = scrap[i];
-            let bestComb = findPerfect(sVal, req); 
-            if (!bestComb) {
-                let tempCuts = [], rem = sVal, trq = [...req];
-                for (let j = 0; j < trq.length; j++) {
-                    if (trq[j] <= rem) {
-                        let potentialWaste = rem - trq[j];
-                        if (safe(potentialWaste)) { rem -= trq[j]; tempCuts.push(trq[j]); trq.splice(j, 1); j--; }
+                    if (!bestMatch || p > bestMatch.o) {
+                        bestMatch = { o: p, c: comb };
                     }
                 }
-                if (tempCuts.length > 0) bestComb = tempCuts;
-            }
-            if (bestComb) {
-                let finalWaste = sVal - bestComb.reduce((a, b) => a + b, 0);
-                plan.push({ t: 'OLD SCRAP', o: sVal, c: bestComb, r: finalWaste, s: true });
-                bestComb.forEach(v => req.splice(req.indexOf(v), 1)); scrap.splice(i, 1); i--;
             }
         }
 
-        // STEP 3: REMAINING FRESH PIPES
-        while(req.length > 0){
-            let best = null;
-            let av = freshSizes.filter(s => stock[s] > 0).sort((a, b) => a - b);
-            if(!av.length) break;
-            for(let p of av) {
-                let trq = [...req], c = [], r = p;
-                for(let j=0; j<trq.length; j++){ 
-                    if(trq[j] <= r){ 
-                        let potentialWaste = r - trq[j];
-                        if (potentialWaste > 0 && potentialWaste < 36 && r >= 36) continue; 
-                        r -= trq[j]; c.push(trq[j]); trq.splice(j,1); j--; 
-                    } 
-                }
-                if(!best || (r === 0 && best.r !== 0) || (safe(r) && !safe(best.r)) || (safe(r) && p < best.o)) { best = {o: p, c: c, r: r, s: safe(r)}; }
-            }
-            if(best) {
-                plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
-                best.c.forEach(v => req.splice(req.indexOf(v),1)); stock[best.o]--;
-            } else break;
+        if (bestMatch) {
+            plan.push({ t: (bestMatch.o / 12) + 'FT PIPE', o: bestMatch.o, c: bestMatch.c, r: 0, s: true });
+            bestMatch.c.forEach(v => req.splice(req.indexOf(v), 1));
+            stock[bestMatch.o]--;
+            pipesUsed = true;
         }
-
-        let outputHtml = `<div class="print-header"><h2>HATIMI HARDWARE</h2></div><h3 class="screen-only">Results</h3>`;
-        plan.forEach(p => {
-            outputHtml += `<div class="card"><span class="type">${p.t}</span><div class="pick">${p.o}"</div><div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div><div class="status"><span style="color:${p.s ? 'var(--gold)' : 'red'}">${p.s ? 'SAFE' : 'CHARGE FULL'}</span><span>Waste: ${p.r}"</span></div></div>`;
-        });
-        res.innerHTML = outputHtml; res.scrollIntoView({ behavior: 'smooth' });
     }
+
+    // --- STEP 2: USE SCRAPS ---
+    scrap.sort((a, b) => a - b); 
+    for (let i = 0; i < scrap.length; i++) {
+        let sVal = scrap[i];
+        let bestComb = findPerfect(sVal, req); 
+        if (!bestComb) {
+            let tempCuts = [], rem = sVal, trq = [...req];
+            for (let j = 0; j < trq.length; j++) {
+                if (trq[j] <= rem) {
+                    let potentialWaste = rem - trq[j];
+                    if (safe(potentialWaste)) { 
+                        rem -= trq[j]; 
+                        tempCuts.push(trq[j]); 
+                        trq.splice(j, 1); 
+                        j--; 
+                    }
+                }
+            }
+            if (tempCuts.length > 0) bestComb = tempCuts;
+        }
+        if (bestComb) {
+            let finalWaste = sVal - bestComb.reduce((a, b) => a + b, 0);
+            plan.push({ t: 'OLD SCRAP', o: sVal, c: bestComb, r: finalWaste, s: true });
+            bestComb.forEach(v => req.splice(req.indexOf(v), 1));
+            scrap.splice(i, 1);
+            i--;
+        }
+    }
+
+    // --- STEP 3: REMAINING FRESH PIPES ---
+    while(req.length > 0){
+        let best = null;
+        let av = freshSizes.filter(s => stock[s] > 0).sort((a, b) => a - b);
+        if(!av.length) break;
+        for(let p of av) {
+            let trq = [...req], c = [], r = p;
+            for(let j=0; j<trq.length; j++){ 
+                if(trq[j] <= r){ 
+                    let potentialWaste = r - trq[j];
+                    if (potentialWaste > 0 && potentialWaste < 36 && r >= 36) continue; 
+                    r -= trq[j]; c.push(trq[j]); trq.splice(j,1); j--; 
+                } 
+            }
+            if(!best || (r === 0 && best.r !== 0) || (safe(r) && !safe(best.r)) || (safe(r) && p < best.o)) {
+                best = {o: p, c: c, r: r, s: safe(r)};
+            }
+        }
+        if(best) {
+            plan.push({t:(best.o/12)+'FT PIPE', o:best.o, c:best.c, r:best.r, s:best.s});
+            best.c.forEach(v => req.splice(req.indexOf(v),1)); 
+            stock[best.o]--;
+        } else break;
+    }
+
+    // --- RENDER ---
+    let outputHtml = `<div class="print-header"><h2>HATIMI HARDWARE</h2></div><h3 class="screen-only">Results</h3>`;
+    plan.forEach(p => {
+        outputHtml += `
+        <div class="card">
+            <span class="type">${p.t}</span>
+            <div class="pick">${p.o}"</div>
+            <div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div>
+            <div class="status">
+                <span style="color:${p.s ? 'var(--gold)' : 'red'}">${p.s ? 'SAFE' : 'CHARGE FULL'}</span>
+                <span>Waste: ${p.r}"</span>
+            </div>
+        </div>`;
+    });
+    res.innerHTML = outputHtml;
+    res.scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 </body>
 </html>
