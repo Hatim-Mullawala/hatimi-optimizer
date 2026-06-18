@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Fabrication Manager</title>
+    <style>
+    :root { --primary-gold: #b38728; --navy: #1e293b; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+
+    .header { background: #fff; padding: 20px; border-bottom: 3px solid var(--primary-gold); box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 20px; font-weight: 900; color: var(--navy); margin: 0; }
+
+    /* This forces your cards to match the Furniture design */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 20px; }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; height: 260px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); border-color: var(--primary-gold); }
+
+    .img-holder { height: 100px; width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; background: #fbfbfb; border-radius: 8px; overflow: hidden; }
+    .img-holder img { max-height: 90px; max-width: 90%; object-fit: contain; }
+
+    .product-name { font-size: 14px; font-weight: 700; color: #1e293b; height: 40px; display: flex; align-items: center; justify-content: center; }
+    .btn-edit { background: var(--primary-gold); color: white; padding: 10px; border-radius: 6px; font-weight: 700; width: 100%; border: none; cursor: pointer; font-size: 12px; }
+    
+    .fab-btn { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: white; width: 60px; height: 60px; border-radius: 50%; font-size: 30px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; }
+</style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>FABRICATION MANAGER</h1>
+        <a href="index.html" style="color: #b38728; font-weight: bold; text-decoration: none;">BACK</a>
+    </div>
+
+    <div class="product-grid" id="managerGrid"></div>
+
+    <button class="fab-btn" onclick="openInputModal()">+</button>
+
+    <div id="inputModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index: 2000;">
+    <div style="background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; position:relative;">
+        <h2 id="modalAction" style="color:#b38728;">Add Product</h2>
+        <form id="productForm">
+            <div class="form-group"><input type="text" id="cat" placeholder="Category" required></div>
+            <div class="form-group"><input type="text" id="brand" placeholder="Brand" required></div>
+            <div class="form-group"><input type="text" id="name" placeholder="Product Name" required></div>
+            <div class="form-group"><input type="text" id="mrp" placeholder="MRP" required></div>
+            <button type="submit" class="btn-edit" style="width:100%;">SAVE PRODUCT</button>
+            <button type="button" onclick="closeModal()" style="width:100%; margin-top:10px; border:none; background:none; color:red;">CANCEL</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqfLPTM9QCajpUToFw0B2UTKUIv-0d3P5ldQxLWKYfD98PPVf5ZEDXITZuTrdNPh8D8dDKcJxO1D4O/pub?gid=789817243&single=true&output=csv'; // Ensure this is your link!
+    let allProducts = [];
+
+    // 1. Fetch and Load
+    async function loadData() {
+        try {
+            const resp = await fetch(SHEET_URL + '&nocache=' + new Date().getTime());
+            const data = await resp.text();
+            const rows = data.split('\n').slice(1);
+            allProducts = rows.map(row => {
+                const c = row.split(','); // Simplified for manager, use parseCSVLine if needed
+                return { cat: c[0], brand: c[1], name: c[2], mrp: c[5] };
+            });
+            renderManagerGrid();
+        } catch (e) { console.error("Load Failed:", e); }
+    }
+
+  function renderManagerGrid() {
+    const grid = document.getElementById('managerGrid');
+    grid.innerHTML = ""; 
+    
+    allProducts.forEach((p, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <div style="text-align:right;">
+                <button onclick="deleteProduct(${index})" style="background:none; border:none; color:red; cursor:pointer;">🗑️</button>
+            </div>
+            <div class="img-holder">
+                <img src="fabrication-img/${p.name.toLowerCase().replace(/\s/g, '-')}.jpg" 
+                     onerror="this.src='https://placehold.co/100x100?text=No+Img'">
+            </div>
+            <p style="color:var(--primary-gold); font-size:10px; font-weight:900;">${p.brand}</p>
+            <div class="product-name">${p.name}</div>
+            <button class="btn-edit" onclick="openInputModal(${index})">EDIT / VIEW</button>
+        `;
+        grid.appendChild(card);
+    });
+}
+    // 3. Logic placeholders
+   // Make sure this is in your script
+function openInputModal() {
+    document.getElementById('inputModal').style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById('inputModal').style.display = "none";
+}
+    // START
+    loadData();
+</script>
+</body>
+</html>
