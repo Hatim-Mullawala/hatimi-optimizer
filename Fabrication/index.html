@@ -61,86 +61,75 @@
 
     .category-header { background: #222; color: #fff; padding: 15px 25px; font-size: 18px; font-weight: 700; text-transform: uppercase; margin-top: 50px; border-left: 10px solid var(--primary-gold); border-radius: 4px; }
     
-    /* --- 1. PERFECT 5-COLUMN GRID --- */
+    /* --- 1. THE PERFECT GRID SIZING --- */
     .product-grid { 
         display: grid !important; 
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 20px; 
+        /* This perfectly sizes the cards so you get that slender, professional look (4-5 per row) */
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; 
+        gap: 25px !important; 
         padding: 20px 0; 
         width: 100%; 
-        clear: both; 
     }
-    @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 25px; } }
-    @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(5, 1fr); gap: 20px; } }
 
-    /* --- 1. PERFECT 5-COLUMN GRID --- */
-    .product-grid { 
-        display: grid !important; 
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 20px; 
-        padding: 20px 0; 
-        width: 100%; 
-        clear: both; 
-    }
-    @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 25px; } }
-    @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(5, 1fr); gap: 25px; } }
-
-    /* --- 2. THE CARD LAYOUT --- */
+    /* --- 2. EXACT CARD DESIGN & 1PX BORDER --- */
     .product-card { 
-        background: white; 
-        border: 1.5px solid var(--primary-gold); /* Exactly matches the furniture gold outline */
-        border-radius: 12px; 
-        padding: 15px; 
-        text-align: center; 
-        transition: all 0.3s ease; 
+        background: #ffffff !important; 
+        border: 1px solid #b38728 !important; /* Crisp, elegant 1px gold border */
+        border-radius: 10px !important; 
+        padding: 15px !important; /* Perfect white space around the inner gray box */
         display: flex; 
         flex-direction: column; 
-        height: 100%; /* Lets the grid automatically match the height of the tallest card in the row! */
+        height: 100% !important; /* Aligns all buttons at the bottom perfectly */
         box-sizing: border-box; 
     }
+
     .product-card:hover { 
         transform: translateY(-5px); 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08); 
+        box-shadow: 0 10px 20px rgba(179, 135, 40, 0.15) !important; 
     }
 
-    /* --- 3. IMAGE HOLDER --- */
+    /* --- 3. THE LIGHT GRAY IMAGE BOX --- */
     .img-holder { 
-        height: 150px; 
-        width: 100%; 
-        margin-bottom: 15px; 
+        background: #f8fafc !important; /* The exact soft gray from your image */
+        height: 160px !important; /* Taller image area */
+        width: 100% !important; 
+        border-radius: 8px !important; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        background: #f8fafc; /* Matches the soft gray of the furniture catalog */
-        border-radius: 10px; 
+        margin-bottom: 20px !important; 
         overflow: hidden; 
     }
-    .img-holder img { max-height: 130px; max-width: 90%; object-fit: contain; }
+    
+    .img-holder img { 
+        max-height: 120px !important; 
+        max-width: 85% !important; 
+        object-fit: contain; 
+    }
 
     /* --- 4. TEXT & BUTTON ALIGNMENT --- */
     .product-name { 
-        flex-grow: 1; /* Pushes the button to the absolute bottom */
+        flex-grow: 1; 
         display: flex; 
         flex-direction: column; 
         align-items: center; 
         justify-content: flex-start; 
-        margin-bottom: 15px; 
-        width: 100%;
+        margin-bottom: 20px !important; 
+        text-align: center;
     }
-    
+
     .btn-view { 
-        background: var(--primary-gold); 
-        color: white; 
-        padding: 12px 10px; 
-        border-radius: 8px; 
-        font-weight: 800; 
-        display: block; 
-        width: 100%; 
-        font-size: 13px; 
+        background: #b38728 !important; 
+        color: #ffffff !important; 
+        border: none !important; 
+        padding: 12px 10px !important; 
+        border-radius: 6px !important; 
+        font-size: 12px !important; 
+        font-weight: 800 !important; 
+        text-transform: uppercase !important; 
+        width: 100% !important; 
+        margin-top: auto !important; /* Forces button to the exact bottom */
         cursor: pointer; 
-        border: none; 
-        text-transform: uppercase; 
-        margin-top: auto; /* Glues the button to the bottom */
     }
     /* Modal & Table Styles */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
@@ -252,11 +241,14 @@
         <div class="brand-section">
             <img src="logo.png" alt="Hatimi Hardware" class="brand-logo" onerror="this.style.display='none'">
             <div class="brand-text">
-                <h2 id="adminTitle" style="cursor:pointer; user-select:none; color:#b38728;">HATIMI HARDWARE</h2>
-                <p>Fabrication Materials • Prime Design • Roofing</p>
+                <h2 id="adminTitle" style="cursor:pointer; user-select:none; color:#b38728; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 0.5px;">HATIMI HARDWARE</h2>
+                <p style="margin: 4px 0 0 0; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Fabrication Materials • Prime Design • Roofing</p>
+                
+                <div style="margin-top: 8px; font-size: 11px; font-weight: 800; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; display: inline-block; padding: 4px 12px; border-radius: 50px; letter-spacing: 0.5px;">
+                    📦 DISPLAYING: <span id="productCountDisplay" style="color: #b38728; font-size: 13px;">0</span> ITEMS
+                </div>
             </div>
         </div>
-
        <div class="nav-section">
             <button id="nav-furniture" class="nav-pill" onclick="window.location.href='https://hatim-mullawala.github.io/Furniture-Fittings/'">🛋️ Furniture</button>
             
@@ -588,11 +580,12 @@ async function renderFrontPage(products) {
             // Connects perfectly to your newly cleaned openModal function
             let clickAction = `openModal('${encN}', '${encC}', '${encBrand}', '', '${encS}')`;
 // The critical fix here is "white-space: normal" and "word-wrap" to prevent cutting!
+            // Exact font-weights, colors, and letter-spacing from your screenshot
             const titleHTML = `
-                   <div style="font-size:11px; color:#b38728; font-weight:900; text-transform:uppercase; margin-bottom:6px; width:100%; white-space:normal; word-wrap:break-word;">
+                   <div style="font-size:12px; color:var(--primary-gold); font-weight:900; text-transform:uppercase; margin-bottom:8px; width:100%; white-space:normal; word-wrap:break-word; letter-spacing:0.5px;">
                        ${displayBrand}
                    </div>
-                   <div style="font-size:15px; font-weight:800; color:#1e293b; line-height:1.4; width:100%; white-space:normal; word-wrap:break-word;">
+                   <div style="font-size:17px; font-weight:900; color:#1e293b; line-height:1.3; width:100%; white-space:normal; word-wrap:break-word;">
                        ${displayTitle}
                    </div>`;
 
@@ -605,7 +598,7 @@ async function renderFrontPage(products) {
                     ${titleHTML}
                 </div>
                 <div class="no-print" style="width: 100%;">
-                    <button class="btn-view" onclick="${clickAction}">View Sizes & Prices</button>
+                    <button class="btn-view" onclick="${clickAction}">VIEW SIZES & PRICES</button>
                 </div>
             </div>`;
 
@@ -615,6 +608,8 @@ async function renderFrontPage(products) {
     }
     if (html !== "") html += "</div></div>"; 
     container.innerHTML = html;
+    // ADD THIS LINE TO UPDATE THE COUNTER ON LOAD:
+    document.getElementById('productCountDisplay').innerText = seen.size;
 }
 
 function tryLoadImage(idOrElement, urls, name) {
@@ -1071,7 +1066,20 @@ function openZoom(event, name, imgSrc) {
 
 function filterProducts() {
     const q = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.product-card').forEach(c => c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none");
+    let visibleCount = 0; // Create a counter
+
+    document.querySelectorAll('.product-card').forEach(c => {
+        // If the card matches the search, show it and increase the counter
+        if (c.innerText.toLowerCase().includes(q)) {
+            c.style.display = "flex"; // Use flex to maintain the button alignment
+            visibleCount++;
+        } else {
+            c.style.display = "none";
+        }
+    });
+
+    // Update the badge with the new search count!
+    document.getElementById('productCountDisplay').innerText = visibleCount;
 }
 
 function filterCategoryCards(filterType, btn) {
