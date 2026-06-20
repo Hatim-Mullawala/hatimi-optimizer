@@ -565,11 +565,13 @@ async function renderFrontPage(products) {
             const cClean = String(p.cat).toLowerCase().trim().replace(/[,\s./_]+/g, '-');
 
             // Standardized image paths for fabrication
-            const paths = [
-                `fabrication-img/${bClean}-${nClean}.jpg`, 
-                `fabrication-img/${cClean}-${nClean}.jpg`, 
-                `fabrication-img/${nClean}.jpg`
-            ];
+            // --- UPGRADED SMART IMAGE SEARCH ---
+        const paths = [
+            `fabrication-img/${bClean}-${nClean}.jpg`, // 1. Looks for the specific brand+product (pidilite-heatx.jpg)
+            `fabrication-img/${nClean}.jpg`,           // 2. Looks for just the product name (heatx.jpg)
+            `fabrication-img/${bClean}.jpg`,           // 3. ✨ NEW: Fallback to just the Brand name! (pidilite.jpg)
+            `fabrication-img/${cClean}.jpg`            // 4. ✨ NEW: Fallback to just the Category name! (adhesives.jpg)
+        ];
 
             const encN = encodeURIComponent(p.name).replace(/'/g, "%27");
             const encC = encodeURIComponent(catName).replace(/'/g, "%27");
