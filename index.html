@@ -43,7 +43,11 @@
         .btn-print { background: #333 !important; color: #fff !important; border-radius: 12px !important; padding: 16px !important; margin: 20px 0 !important; width: 100%; font-weight: 700; text-transform: uppercase; cursor: pointer; }
         .print-header { display: none; }
         .screen-only { font-size: 0.8rem; text-transform: uppercase; color: #888; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 15px; font-weight: 800; }
-
+/* Styling for the Total Size Summary */
+        .summary-card { background: var(--dark); color: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; border-left: 6px solid var(--gold); }
+        .summary-card p { margin: 0; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #bbb; }
+        .summary-card .total-val { font-size: 1.8rem; font-weight: 900; color: white; margin-top: 4px; }
+        .summary-card .total-val span { color: var(--gold); }
         @media print {
             @page { size: 4in 6in; margin: 2mm; }
             header, .section, button, .btn-calc, .no-print-zone, .screen-only { display: none !important; }
@@ -229,8 +233,26 @@
         } else break;
     }
 
+    // --- CALCULATE TOTAL SUM OF ALL CUT PIPES IN FEET ---
+    let totalInchesCut = 0;
+    plan.forEach(p => {
+        let currentCardSum = p.c.reduce((a, b) => a + b, 0);
+        totalInchesCut += currentCardSum;
+    });
+    let totalFeetCut = (totalInchesCut / 12).toFixed(2);
+
     // --- RENDER ---
     let outputHtml = `<div class="print-header"><h2>HATIMI HARDWARE</h2></div><h3 class="screen-only">Results</h3>`;
+    
+    // Inject Total Size Summary Card right above the cut cards
+    if(plan.length > 0) {
+        outputHtml += `
+        <div class="summary-card">
+            <p>Total Size of Cut Pipes</p>
+            <div class="total-val">${totalFeetCut} <span>FT</span></div>
+        </div>`;
+    }
+
     plan.forEach(p => {
         outputHtml += `<div class="card"><span class="type">${p.t}</span><div class="pick">${p.o}"</div><div class="cut-line">Cut: <b>${p.c.join('" + ')}"</b></div><div class="status"><span style="color:${p.s ? 'var(--gold)' : 'red'}">${p.s ? 'SAFE' : 'CHARGE FULL'}</span><span>Waste: ${p.r}"</span></div></div>`;
     });
