@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store | Hatimi Hardware</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --navy: #050c1a; --gold: #c29b40; }
+        .bg-navy { background-color: var(--navy); }
+        .text-gold { color: var(--gold); }
+        .cart-count { background: #ff4444; position: absolute; top: -8px; right: -8px; border-radius: 50%; width: 20px; height: 20px; display: flex; items-center; justify-content: center; font-size: 10px; color: white; }
+    </style>
+</head>
+<body class="bg-[#fafafa]">
+
+    <nav class="bg-navy p-6 text-white flex justify-between items-center sticky top-0 z-50">
+        <a href="index.html" class="text-xs uppercase tracking-widest text-gray-400 hover:text-gold transition">← Back to Home</a>
+        <div class="text-xl font-black tracking-tighter uppercase">Hatimi <span class="text-gold">Store</span></div>
+        <div class="relative cursor-pointer" onclick="toggleCart()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-width="2"/>
+            </svg>
+            <span id="cart-count" class="cart-count font-bold">0</span>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-12 px-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 text-center">
+                <div class="aspect-square bg-gray-50 rounded-2xl mb-4 flex items-center justify-center font-bold text-gray-200">IMG</div>
+                <h3 class="font-bold text-navy uppercase text-xs mb-1">Premium Brass Handle</h3>
+                <p class="text-xl font-black mb-4 italic">₹650</p>
+                <button onclick="addToCart('Brass Handle', 650)" class="w-full bg-navy text-gold py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:opacity-90">Add to Cart</button>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 text-center">
+                <div class="aspect-square bg-gray-50 rounded-2xl mb-4 flex items-center justify-center font-bold text-gray-200">IMG</div>
+                <h3 class="font-bold text-navy uppercase text-xs mb-1">Taparia Spanner</h3>
+                <p class="text-xl font-black mb-4 italic">₹320</p>
+                <button onclick="addToCart('Taparia Spanner', 320)" class="w-full bg-navy text-gold py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:opacity-90">Add to Cart</button>
+            </div>
+        </div>
+    </main>
+
+    <aside id="cart-sidebar" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white z-[100] shadow-2xl transform translate-x-full transition-transform duration-500 flex flex-col">
+        <div class="p-8 border-b bg-navy text-white flex justify-between items-center">
+            <h2 class="text-xl font-black uppercase italic">Your Order</h2>
+            <button onclick="toggleCart()" class="text-3xl text-gray-500">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-grow p-8 overflow-y-auto space-y-4"></div>
+        <div class="p-8 border-t">
+            <div class="flex justify-between mb-6"><span class="font-bold">Total:</span><span id="cart-total" class="text-2xl font-black italic">₹0</span></div>
+            <button onclick="checkoutWhatsApp()" class="w-full bg-[#25D366] text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg">Confirm Order on WhatsApp</button>
+        </div>
+    </aside>
+
+    <script>
+        let cart = []; let total = 0;
+        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
+        function addToCart(name, price) { cart.push({name, price}); total += price; updateUI(); }
+        function updateUI() {
+            const list = document.getElementById('cart-items');
+            document.getElementById('cart-count').innerText = cart.length;
+            document.getElementById('cart-total').innerText = '₹' + total;
+            list.innerHTML = '';
+            cart.forEach((item, i) => {
+                list.innerHTML += `<div class="flex justify-between items-center border-b pb-4"><div class="text-xs font-bold uppercase">${item.name}</div><button onclick="remove(${i})" class="text-red-500 text-xs">Remove</button></div>`;
+            });
+        }
+        function remove(i) { total -= cart[i].price; cart.splice(i, 1); updateUI(); }
+        function checkoutWhatsApp() {
+            if (cart.length === 0) return alert("Empty Cart!");
+            let phone = "918109539453"; 
+            let message = "*Order from Hatimi Hardware Website*%0a%0a";
+            cart.forEach(item => message += `- ${item.name} (₹${item.price})%0a`);
+            message += `%0a*Total: ₹${total}*`;
+            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        }
+    </script>
+</body>
+</html>

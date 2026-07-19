@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Hatimi Hardware">
+    <meta name="theme-color" content="#b38728">
+    <link rel="apple-touch-icon" href="logo-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Fabrication Materials - Hatimi Hardware</title>
+    
+    <style>
+    /* Force the bot to stay within the screen boundaries on mobile */
+    #tars-widget-container.mobile {
+        height: calc(100% - 40px) !important; 
+        top: 20px !important;                 
+        bottom: 20px !important;              
+        right: 10px !important;               
+        left: 10px !important;                
+        width: calc(100% - 20px) !important;
+        border-radius: 12px !important;       
+        overflow: hidden !important;
+    }
+    #tars-widget-container.mobile iframe {
+        border-radius: 12px !important;
+    }
+
+    :root { --primary-gold: #b38728; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; color: #333; }
+
+    .search-container { background: white; padding: 15px 0; display: flex; justify-content: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1000; }
+    .search-box { width: 60%; max-width: 700px; padding: 12px 25px; border: 1.5px solid var(--primary-gold); border-radius: 50px; font-size: 16px; outline: none; }
+
+    .main-wrapper { max-width: 1300px; margin: 20px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.06); }
+    .catalog-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 25px; border-bottom: 3px solid var(--primary-gold); margin-bottom: 30px; }
+    
+    .brand-section { display: flex; align-items: center; gap: 15px; }
+    .brand-logo { height: 55px; object-fit: contain; } 
+    .brand-text h2 { margin: 0; font-size: 24px; font-weight: 900; color: #b38728; line-height: 1; letter-spacing: 0.5px; }
+    .brand-text p { margin: 4px 0 0 0; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
+
+    .premium-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 15px 30px; background: #fff;
+        border-bottom: 2px solid #b38728;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 20px;
+    }
+
+    .nav-section { display: flex; gap: 5px; background: #f8fafc; padding: 6px; border-radius: 50px; border: 1px solid #e2e8f0; }
+    .nav-pill { background: transparent; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 800; font-size: 13px; color: #64748b; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+    .nav-pill:hover { color: #1e293b; background: #f1f5f9; }
+    .nav-pill.active { background: #b38728 !important; color: white !important; box-shadow: 0 4px 10px rgba(179, 135, 40, 0.3); }
+
+    .action-section { display: flex; gap: 12px; }
+    .icon-btn { width: 44px; height: 44px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #b38728; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .icon-btn:hover { border-color: #b38728; background: #fffbeb; transform: translateY(-2px); }
+    .icon-btn svg { width: 18px; height: 18px; }
+
+    .category-header { background: #222; color: #fff; padding: 15px 25px; font-size: 18px; font-weight: 700; text-transform: uppercase; margin-top: 50px; border-left: 10px solid var(--primary-gold); border-radius: 4px; }
+    
+    /* --- 1. THE PERFECT GRID SIZING --- */
+    .product-grid { 
+        display: grid !important; 
+        /* This perfectly sizes the cards so you get that slender, professional look (4-5 per row) */
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; 
+        gap: 25px !important; 
+        padding: 20px 0; 
+        width: 100%; 
+    }
+
+    /* --- 2. EXACT CARD DESIGN & 1PX BORDER --- */
+    .product-card { 
+        background: #ffffff !important; 
+        border: 1px solid #b38728 !important; /* Crisp, elegant 1px gold border */
+        border-radius: 10px !important; 
+        padding: 15px !important; /* Perfect white space around the inner gray box */
+        display: flex; 
+        flex-direction: column; 
+        height: 100% !important; /* Aligns all buttons at the bottom perfectly */
+        box-sizing: border-box; 
+    }
+
+    .product-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 10px 20px rgba(179, 135, 40, 0.15) !important; 
+    }
+
+    /* --- 3. THE LIGHT GRAY IMAGE BOX --- */
+    .img-holder { 
+        background: #f8fafc !important; /* The exact soft gray from your image */
+        height: 160px !important; /* Taller image area */
+        width: 100% !important; 
+        border-radius: 8px !important; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        margin-bottom: 20px !important; 
+        overflow: hidden; 
+    }
+    
+    .img-holder img { 
+        max-height: 120px !important; 
+        max-width: 85% !important; 
+        object-fit: contain; 
+    }
+
+    /* --- 4. TEXT & BUTTON ALIGNMENT --- */
+    .product-name { 
+        flex-grow: 1; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: flex-start; 
+        margin-bottom: 20px !important; 
+        text-align: center;
+    }
+
+    .btn-view { 
+        background: #b38728 !important; 
+        color: #ffffff !important; 
+        border: none !important; 
+        padding: 12px 10px !important; 
+        border-radius: 6px !important; 
+        font-size: 12px !important; 
+        font-weight: 800 !important; 
+        text-transform: uppercase !important; 
+        width: 100% !important; 
+        margin-top: auto !important; /* Forces button to the exact bottom */
+        cursor: pointer; 
+    }
+    /* Modal & Table Styles */
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+    .modal-content { background: white; width: 95%; max-width: 900px; padding: 30px; border-radius: 15px; position: relative; max-height: 90vh; overflow-y: auto; }
+    .close-modal { position: absolute; right: 20px; top: 15px; font-size: 30px; cursor: pointer; color: #888; }
+    .modal-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .modal-table th { background: #f4f4f4; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; }
+    .modal-table td { padding: 12px; border-bottom: 1px solid #eee; }
+    .modal-footer { display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-top: 25px; padding-top: 15px; border-top: 2px solid #eee; }
+    .whatsapp-btn { background: #25D366; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); transition: 0.3s; }
+    .whatsapp-btn:hover { background: #20ba56; transform: translateY(-2px); }
+
+    /* Global Cart Bar */
+    .global-cart-bar { position: fixed !important; bottom: 0 !important; left: 0; right: 0; width: 100%; background: rgba(255, 255, 255, 0.95) !important; backdrop-filter: blur(10px); box-shadow: 0 -4px 25px rgba(0,0,0,0.1); display: none; justify-content: space-between; align-items: center; padding: 15px 5%; box-sizing: border-box; z-index: 20000 !important; border-top: 1px solid #e2e8f0; }
+    .cart-items-text { font-size: 12px; color: #64748b; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+    .cart-total-text { font-size: 24px; color: #1e293b; font-weight: 900; }
+    .cart-total-text span { color: #b38728; margin-right: 2px; }
+    .btn-checkout { background: linear-gradient(135.5deg, #b38728 0%, #8e6a20 100%); color: white; border: none; padding: 14px 28px; border-radius: 50px; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(179, 135, 40, 0.3); display: flex; align-items: center; gap: 8px; }
+    .btn-clear { background: transparent; border: 2px solid #ef4444; width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s ease; }
+    .btn-clear svg { stroke: #ef4444; transition: stroke 0.3s ease; pointer-events: none; }
+    .btn-clear:hover { background: #ef4444; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+    .btn-clear:hover svg { stroke: white; }
+
+    /* Cart Review Modal */
+    #cartReviewModal { display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+    .floating-cart-card { background: white; width: 90%; max-width: 450px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; max-height: 80vh; overflow: hidden; margin-bottom: 20px; }
+    .review-scroll-area::-webkit-scrollbar { width: 6px; }
+    .review-scroll-area::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+    /* Footer & Utils */
+    footer { background: white; padding: 60px 20px 30px; border-top: 4px solid var(--primary-gold); margin-top: 80px; }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+    .footer-column h3 { color: var(--primary-gold); font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    .last-sync { text-align: center; font-size: 12px; color: #888; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+    #backToTop { position: fixed; right: 31px; bottom: 155px; z-index: 10000; display: none; background: #1e293b; color: white; border: none; width: 55px; height: 55px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 30px rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .mobile-call-btn { display: none; position: fixed; bottom: 30px; left: 30px; background: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); align-items: center; gap: 10px; }
+
+    @media (max-width: 768px) {
+        .premium-header { flex-direction: column; padding: 15px 10px; gap: 15px; }
+        .brand-section { justify-content: center; text-align: center; }
+        .brand-logo { height: 45px; }
+        .brand-text h2 { font-size: 20px; }
+        .nav-section { flex-wrap: wrap; justify-content: center; border-radius: 15px; }
+        .nav-pill { padding: 8px 16px; font-size: 11px; }
+        .global-cart-bar { padding: 10px 15px; }
+        .cart-total-text { font-size: 20px; }
+        .btn-checkout { padding: 10px 16px; font-size: 13px; }
+        .btn-clear { width: 40px; height: 40px; }
+        .mobile-call-btn { display: flex; }
+        .main-wrapper { padding: 15px; margin: 10px; }
+        .footer-container { grid-template-columns: 1fr; }
+        .modal-content { width: 100% !important; height: 100vh !important; max-height: 100vh !important; border-radius: 0 !important; padding: 40px 2px 80px 2px !important; margin: 0 !important; }
+        .close-modal { position: fixed !important; top: 10px !important; right: 15px !important; background: #fff; color: #e74c3c !important; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 9999; }
+        .modal-table { display: table !important; width: 100% !important; table-layout: fixed !important; border-collapse: collapse; }
+        .modal-table th, .modal-table td { padding: 12px 1px !important; font-size: 12px !important; word-wrap: break-word !important; white-space: normal !important; }
+        .modal-table th:nth-child(1), .modal-table td:nth-child(1) { width: 8%; }  
+        .modal-table th:nth-child(2), .modal-table td:nth-child(2) { width: 25%; text-align: left; } 
+        .modal-table th:nth-child(3), .modal-table td:nth-child(3) { width: 14%; } 
+        .modal-table th:nth-child(4), .modal-table td:nth-child(4) { width: 16%; } 
+        .modal-table th:nth-child(5), .modal-table td:nth-child(5) { width: 18%; } 
+        .modal-table th:nth-child(6), .modal-table td:nth-child(6) { width: 19%; text-align: right; padding-right: 5px !important;} 
+        .row-spec-name { font-size: 14px !important; font-weight: 800; }
+        .row-disc, .row-qty { width: 100% !important; max-width: 35px; min-width: 28px !important; flex-shrink: 0 !important; box-sizing: border-box; padding: 6px 0 !important; text-align: center; font-size: 13px !important; }
+        .row-select { transform: scale(1.3) !important; margin: 0; }
+        .modal-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 10px 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.15); justify-content: space-between; margin: 0; border: none; z-index: 1000; box-sizing: border-box; }
+        .floating-cart-card { width: 96% !important; max-height: 90vh !important; border-radius: 20px !important; }
+        body { padding-bottom: 100px; }
+    }
+    @media print { .no-print { display: none !important; } }
+    /* --- THIS CREATES THE SPACING ON THE LEFT AND RIGHT --- */
+    body { 
+        background-color: #f4f7f6; /* The light gray background outside the box */
+        margin: 0; 
+        padding: 0; 
+    }
+
+    .main-wrapper { 
+        max-width: 1300px; /* Stops it from stretching too wide */
+        margin: 30px auto; /* Centers the box and adds space at top/bottom */
+        background: white; /* The white box */
+        padding: 40px; /* Space inside the box */
+        border-radius: 15px; /* Rounded corners */
+        box-shadow: 0 4px 25px rgba(0,0,0,0.06); /* Soft shadow */
+    }
+
+    @media (max-width: 768px) {
+        /* Makes it fit nicely on mobile phones */
+        .main-wrapper { 
+            padding: 15px; 
+            margin: 10px; 
+        } 
+    }
+    </style>
+</head>
+<body>
+
+<button id="backToTop" onclick="scrollToTop()">↑</button>
+<a href="tel:+919406648766" class="mobile-call-btn">
+    <svg width="24" height="24" viewBox="0 0 24 24"><path fill="white" d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
+    <span>Call Shop</span>
+</a>
+
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-box" placeholder="Search fabrication materials..." onkeyup="filterProducts()">
+</div>
+
+<div class="main-wrapper">
+    <div class="premium-header no-print">
+        <div class="brand-section">
+            <img src="logo.png" alt="Hatimi Hardware" class="brand-logo" onerror="this.style.display='none'">
+            <div class="brand-text">
+                <h2 id="adminTitle" style="cursor:pointer; user-select:none; color:#b38728; margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 0.5px;">HATIMI HARDWARE</h2>
+                <p style="margin: 4px 0 0 0; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Fabrication Materials • Prime Design • Roofing</p>
+                
+                <div style="margin-top: 8px; font-size: 11px; font-weight: 800; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; display: inline-block; padding: 4px 12px; border-radius: 50px; letter-spacing: 0.5px;">
+                    📦 DISPLAYING: <span id="productCountDisplay" style="color: #b38728; font-size: 13px;">0</span> ITEMS
+                </div>
+            </div>
+        </div>
+       <div class="nav-section">
+            <button id="nav-furniture" class="nav-pill" onclick="window.location.href='https://hatim-mullawala.github.io/Furniture-Fittings/'">🛋️ Furniture</button>
+            
+            <button id="nav-fabrication" class="nav-pill active" onclick="window.location.href='#'">🏗️ Fabrication</button>
+            
+            <button id="nav-wholesale" class="nav-pill" onclick="window.location.href='https://hatim-mullawala.github.io/Wholesale-Catalogue/'">📦 Wholesale</button>
+            
+            <button id="nav-tools" class="nav-pill" onclick="window.location.href='https://hatim-mullawala.github.io/Hatimi-Hardware-Catalogue/'">🛠️ Tools</button>
+        </div>
+        <div class="action-section">
+            <button class="icon-btn" onclick="location.reload()" title="Refresh Catalog">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.13-5.88L21 8"></path></svg>
+            </button>
+            <button class="icon-btn" onclick="window.print()" title="Print Catalog">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            </button>
+        </div>
+    </div>
+
+ <style>
+        .promo-slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            background: #fff;
+        }
+        .promo-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+        .promo-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+        .promo-slide img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            height: 300px; /* Desktop Height */
+        }
+        .promo-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .promo-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .promo-dot.active {
+            background: var(--primary-gold);
+            transform: scale(1.3);
+            background: #b38728;
+            border: 1px solid #fff;
+        }
+        @media (max-width: 768px) {
+            .promo-slide img {
+                height: 160px; /* Mobile Height */
+            }
+        }
+    </style>
+
+    <div class="promo-slider-container no-print">
+        <div class="promo-slides" id="promoSlides">
+            <div class="promo-slide">
+                <img src="banner1.jpg" onerror="this.src='https://placehold.co/1200x300/1e293b/b38728?text=NEW+PRODUCT+LAUNCH+1'">
+            </div>
+            <div class="promo-slide">
+                <img src="banner2.jpg" onerror="this.src='https://placehold.co/1200x300/f8fafc/b38728?text=SPECIAL+OFFER+2'">
+            </div>
+            <div class="promo-slide">
+                <img src="banner3.jpg" onerror="this.src='https://placehold.co/1200x300/334155/ffffff?text=PRIME+DESIGN+COLLECTION+3'">
+            </div>
+        </div>
+        
+        <div class="promo-dots" id="promoDots">
+            <div class="promo-dot active" onclick="goToSlide(0)"></div>
+            <div class="promo-dot" onclick="goToSlide(1)"></div>
+            <div class="promo-dot" onclick="goToSlide(2)"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPromoSlide = 0;
+        const promoSlides = document.getElementById('promoSlides');
+        const promoDots = document.querySelectorAll('.promo-dot');
+        const totalPromoSlides = promoDots.length;
+
+        function goToSlide(index) {
+            currentPromoSlide = index;
+            promoSlides.style.transform = `translateX(-${currentPromoSlide * 100}%)`;
+            promoDots.forEach(dot => dot.classList.remove('active'));
+            promoDots[currentPromoSlide].classList.add('active');
+        }
+
+        // Automatically change the slide every 3.5 seconds
+        setInterval(() => {
+            currentPromoSlide = (currentPromoSlide + 1) % totalPromoSlides;
+            goToSlide(currentPromoSlide);
+        }, 3500);
+    </script>
+    <div id="catalog-container"></div>
+</div>
+</div>
+<div id="order-modal-overlay" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        
+        <h2 id="modal-title" style="color: #b38728; margin-bottom: 5px; font-size: 24px; font-weight: 900;"></h2>
+        <p id="modal-subtitle" style="color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; font-size: 14px;"></p>
+
+        <div style="background:#fff9eb; border:1px dashed #d4af37; padding:15px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:center; align-items:center; gap:10px; font-weight:bold; color:#333;">
+            Bulk Discount: <input type="number" id="bulk-disc" value="0" style="width:60px; padding:6px; border:1px solid #333; border-radius:4px; text-align:center;" oninput="applyBulkDiscount()"> % OFF
+        </div>
+        
+        <div style="background:#fff9eb; border:1px dashed #d4af37; padding:15px; border-radius:8px; margin-bottom:20px; display:flex; justify-content:center; align-items:center; gap:10px; font-weight:bold; color:#333;">
+            Set Unit for All:
+            <select id="bulk-unit" style="padding:6px 15px; border:1px solid #333; border-radius:4px;" onchange="applyBulkUnit()">
+                <option value="pcs">pcs</option><option value="box">box</option><option value="kg">kg</option><option value="sets">sets</option><option value="sheet">sheet</option><option value="bundle">bundle</option>
+            </select>
+        </div>
+        
+        <div id="modal-filter-container"></div>
+        
+        <div style="overflow-x: auto;">
+            <table class="modal-table">
+                <thead>
+                    <tr style="background: #f4f4f4; border-bottom: 2px solid #ddd;">
+                        <th style="padding:10px;">Select</th>
+                        <th id="modal-col-specs" style="padding:10px;">Size / Specs</th>
+                        <th style="padding:10px;">MRP (₹)</th>
+                        <th style="padding:10px;">Disc %</th>
+                        <th style="padding:10px;">Qty</th>
+                        <th style="padding:10px; text-align: right;">Final Price</th>
+                    </tr>
+                </thead>
+                <tbody id="modal-table-body"></tbody>
+            </table>
+        </div>
+
+        <div class="modal-footer">
+            <div style="font-size: 18px;">
+                <span style="font-weight: bold; color: #b38728;">Total: <span id="modal-total-amount">₹0</span></span>
+            </div>
+            <button class="whatsapp-btn" onclick="sendOrderToWhatsapp()">
+                <svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg>
+                Send Order
+            </button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>📍 VISIT OUR SHOP</h3>
+            <p><strong>Hatimi Hardware</strong><br>101, Subhash Path, Barnagar, MP - 456771</p>
+        </div>
+        <div class="footer-column">
+            <h3>📞 CONTACT</h3>
+            <div>Juzer: 94066 48766</div><div>Shabbir: 94254 94845</div>
+        </div>
+    </div>
+    <div class="last-sync" id="syncStatus">Fetching latest data...</div>
+</footer>
+
+<div id="gold-cart-bar" class="global-cart-bar no-print" onclick="showCartReview()">
+    <div class="cart-info" style="cursor:pointer;">
+        <span id="cartItemCount" class="cart-items-text">0 ITEMS SELECTED</span>
+        <span id="cart-total-amount" class="cart-total-text"><span>₹</span>0</span>
+        <span style="font-size: 10px; color: #b38728; font-weight: bold; text-decoration: underline; display: block;">TAP TO VIEW LIST ↓</span>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+        <button onclick="sendGlobalWhatsAppOrder(event)" class="btn-checkout">SEND ORDER</button>
+        <button onclick="clearGlobalCart(event)" class="btn-clear" title="Clear Entire Cart">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2-2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+    </div>
+</div>
+
+<div id="cartReviewModal" class="modal" style="display:none; align-items:flex-end;">
+    <div class="modal-content" style="width:100%; max-width:600px; border-radius:20px 20px 0 0; margin:0; padding:25px;">
+        <div id="reviewListContainer"></div>
+    </div>
+</div>
+
+<div id="imageLightbox" onclick="this.style.display='none'" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; cursor:pointer;">
+    <span style="position:absolute; top:20px; right:30px; color:white; font-size:40px; font-weight:bold;">&times;</span>
+    <img id="enlargedImg" style="max-width:90%; max-height:85vh; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.5);">
+    <div id="lightboxCaption" style="position:absolute; bottom:40px; color:white; font-size:20px; font-weight:bold; text-align:center; width:100%;"></div>
+</div>
+
+<script>
+// =========================================================
+// !!! INSERT YOUR NEW FABRICATION GOOGLE SHEET CSV URL HERE !!!
+// =========================================================
+const fabricationSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqfLPTM9QCajpUToFw0B2UTKUIv-0d3P5ldQxLWKYfD98PPVf5ZEDXITZuTrdNPh8D8dDKcJxO1D4O/pub?gid=789817243&single=true&output=csv';
+
+let allProducts = [];
+let globalCart = {};
+
+window.onscroll = function() {
+    const btn = document.getElementById("backToTop");
+    if (btn) {
+        if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+            btn.style.display = "flex"; 
+        } else {
+            btn.style.display = "none";
+        }
+    }
+};
+
+function scrollToTop() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function parseCSVLine(line) {
+    const result = []; let cell = '', inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] === '"' && line[i+1] === '"') { cell += '"'; i++; }
+        else if (line[i] === '"') inQuotes = !inQuotes;
+        else if (line[i] === ',' && !inQuotes) { result.push(cell.trim()); cell = ''; }
+        else cell += line[i];
+    }
+    result.push(cell.trim()); return result;
+}
+
+async function loadFabricationData() {
+    try {
+        // --- CACHE BUSTER FIX: Forces the browser to get the freshest data ---
+        const response = await fetch(fabricationSheetURL + '&nocache=' + new Date().getTime());
+        const data = await response.text();
+        const rows = data.split('\n').slice(1);
+
+        allProducts = rows.map(row => {
+            const c = parseCSVLine(row);
+            if (c.length < 3) return null;
+
+            return {
+                rawSearch: row.toLowerCase().replace(/"/g, ''),
+                cat:   c[0] ? c[0].replace(/"/g, '').trim() : "General",
+                brand: c[1] ? c[1].replace(/"/g, '').trim() : "Prime Design",
+                name:  c[2] ? c[2].replace(/"/g, '').trim() : "Product",
+                specs: c[3] ? c[3].replace(/(^"|"$)/g, '').trim() : "",
+                mrp:   c[5] ? String(c[5]).replace(/[₹\s,"]/g, '').trim() : "0",
+                tag:   c[6] ? String(c[6]).toLowerCase().trim() : "",
+                series: c[7] ? c[7].replace(/"/g, '').trim() : "" 
+            };
+        }).filter(p => p !== null);
+
+        document.getElementById('syncStatus').innerText = `Catalog Sync: ${new Date().toLocaleString()}`;
+        renderFrontPage(allProducts);
+
+    } catch (error) {
+        console.error("Error loading CSV:", error);
+        document.getElementById('syncStatus').innerText = "❌ Sync Failed. Check Connection.";
+    }
+}
+
+async function renderFrontPage(products) {
+    const container = document.getElementById('catalog-container');
+    if (!container) return;
+
+    const seen = new Set();
+    let currentCat = "";
+    let html = "";
+
+    // Sort by Category -> Series -> Name
+    const sortedProducts = [...products].sort((a, b) => {
+        const catA = String(a.cat || "").trim().toLowerCase();
+        const catB = String(b.cat || "").trim().toLowerCase();
+        if (catA !== catB) return catA.localeCompare(catB);
+        const seriesA = String(a.series || "").trim().toLowerCase();
+        const seriesB = String(b.series || "").trim().toLowerCase();
+        if (seriesA !== seriesB) return seriesA.localeCompare(seriesB);
+        const nameA = String(a.name || "").trim().toLowerCase();
+        const nameB = String(b.name || "").trim().toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+
+    for (const p of sortedProducts) {
+        const catName = String(p.cat || "").trim();
+        const seriesName = String(p.series || "").trim().toUpperCase();
+        
+        // Clean, simple key to group products
+        const key = `${catName}|${p.name}|${p.brand}`;
+        
+        if (!seen.has(key)) {
+            if (catName !== currentCat) {
+                if (html !== "") html += `</div></div>`; 
+                currentCat = catName;
+                html += `<div class="category-group" style="margin-bottom: 50px; width: 100%; clear: both;">
+                            <h2 class="category-header">${currentCat}</h2>`;
+                html += `<div class="product-grid">`; 
+            }
+
+            const displayTitle = p.name;
+            const displayBrand = p.brand;
+
+            const nClean = String(p.name).toLowerCase().trim().replace(/[,\s./_]+/g, '-');
+            const bClean = String(p.brand).toLowerCase().trim().replace(/[,\s./_]+/g, '-');
+            const cClean = String(p.cat).toLowerCase().trim().replace(/[,\s./_]+/g, '-');
+
+            // Standardized image paths for fabrication
+            // --- UPGRADED SMART IMAGE SEARCH ---
+        const paths = [
+            `fabrication-img/${bClean}-${nClean}.jpg`, // 1. Looks for the specific brand+product (pidilite-heatx.jpg)
+            `fabrication-img/${nClean}.jpg`,           // 2. Looks for just the product name (heatx.jpg)
+            `fabrication-img/${bClean}.jpg`,           // 3. ✨ NEW: Fallback to just the Brand name! (pidilite.jpg)
+            `fabrication-img/${cClean}.jpg`            // 4. ✨ NEW: Fallback to just the Category name! (adhesives.jpg)
+        ];
+
+            const encN = encodeURIComponent(p.name).replace(/'/g, "%27");
+            const encC = encodeURIComponent(catName).replace(/'/g, "%27");
+            const encBrand = encodeURIComponent(p.brand).replace(/'/g, "%27");
+            const encS = encodeURIComponent(seriesName).replace(/'/g, "%27");
+            const imgId = `img-${Math.random().toString(36).substr(2, 5)}`;
+
+            // Connects perfectly to your newly cleaned openModal function
+            let clickAction = `openModal('${encN}', '${encC}', '${encBrand}', '', '${encS}')`;
+// The critical fix here is "white-space: normal" and "word-wrap" to prevent cutting!
+            // Exact font-weights, colors, and letter-spacing from your screenshot
+            const titleHTML = `
+                   <div style="font-size:12px; color:var(--primary-gold); font-weight:900; text-transform:uppercase; margin-bottom:8px; width:100%; white-space:normal; word-wrap:break-word; letter-spacing:0.5px;">
+                       ${displayBrand}
+                   </div>
+                   <div style="font-size:17px; font-weight:900; color:#1e293b; line-height:1.3; width:100%; white-space:normal; word-wrap:break-word;">
+                       ${displayTitle}
+                   </div>`;
+
+            html += `
+            <div class="product-card" data-search-text="${p.rawSearch}">
+                <div class="img-holder" onclick="openZoom(event, '${displayTitle.replace(/'/g, "\\'")}', this.querySelector('img').src)">
+                    <img id="${imgId}" src="https://placehold.co/300x300/f8fafc/b38728?text=${encodeURIComponent(displayTitle)}">
+                </div>
+                <div class="product-name">
+                    ${titleHTML}
+                </div>
+                <div class="no-print" style="width: 100%;">
+                    <button class="btn-view" onclick="${clickAction}">VIEW SIZES & PRICES</button>
+                </div>
+            </div>`;
+
+            setTimeout(() => { if(typeof tryLoadImage === 'function') tryLoadImage(imgId, paths, p.name); }, 20);
+            seen.add(key);
+        }
+    }
+    if (html !== "") html += "</div></div>"; 
+    container.innerHTML = html;
+    // ADD THIS LINE TO UPDATE THE COUNTER ON LOAD:
+    document.getElementById('productCountDisplay').innerText = seen.size;
+}
+
+function tryLoadImage(idOrElement, urls, name) {
+    const imgElement = typeof idOrElement === 'string' ? document.getElementById(idOrElement) : idOrElement;
+    if (!imgElement) return;
+
+    let expandedUrls = [];
+    urls.forEach(u => {
+        expandedUrls.push(u);
+        if (u.endsWith('.jpg')) expandedUrls.push(u.replace('.jpg', '.png'));
+        if (u.endsWith('.png')) expandedUrls.push(u.replace('.png', '.jpg'));
+    });
+
+    let index = 0;
+    function attemptLoad() {
+        if (index < expandedUrls.length) {
+            const imgTester = new Image();
+            imgTester.onload = () => { 
+                imgElement.src = expandedUrls[index - 1];
+                imgElement.style.cursor = "zoom-in";
+                imgElement.onclick = (e) => {
+                    if(typeof openZoom === 'function') openZoom(e, name || 'Product Image', imgElement.src);
+                };
+            };
+            imgTester.onerror = attemptLoad;
+            imgTester.src = expandedUrls[index++];
+        } else { 
+            imgElement.src = 'https://placehold.co/300x300/f8fafc/b38728?text=No+Photo'; 
+        }
+    }
+    attemptLoad();
+}
+
+function openModal(nameInput, cat, param, dummyParam, series) {
+    try {
+        const catName = decodeURIComponent(cat);
+        const prodName = decodeURIComponent(nameInput || "");
+        const decodedBrand = decodeURIComponent(param || ""); 
+
+        // Clean filter: Just match the Category, Name, and Brand
+        const items = allProducts.filter(p => p.cat === catName && p.name === prodName && p.brand === decodedBrand);
+
+        if (items.length === 0) return;
+
+        // Set Headers
+        document.getElementById('modal-title').innerText = prodName;
+        const subtitle = document.getElementById('modal-subtitle');
+        const colSpecs = document.getElementById('modal-col-specs');
+
+        colSpecs.innerText = "Size / Specs";
+        subtitle.innerText = catName;
+        subtitle.style.display = "block";
+
+        // Remove any old filters
+        const filterContainer = document.getElementById('modal-filter-container');
+        if (filterContainer) filterContainer.innerHTML = ""; 
+
+        let html = "";
+
+        items.forEach((item) => {
+            // FIX: If specs are empty, use the Product Name as the spec
+            let specsArray = [];
+            if (!item.specs || item.specs.trim() === "") {
+                specsArray = [item.name];
+            } else {
+                specsArray = String(item.specs).split(/[,，|]+/);
+            }
+            
+            const pricesArray = String(item.mrp || "0").split(/[,，|]+/);
+
+            specsArray.forEach((fullSpec, idx) => {
+                const cleanSpec = fullSpec.trim();
+                if (!cleanSpec) return;
+
+                const price = parseFloat(pricesArray[idx] ? pricesArray[idx].trim().replace(/[₹\s,]/g,'') : (pricesArray[0] ? pricesArray[0].trim().replace(/[₹\s,]/g,'') : "0")) || 0;
+                
+                const safeBrand = String(item.brand || 'Hatimi').replace(/"/g, '&quot;');
+                const safeName = String(prodName || item.name).replace(/"/g, '&quot;');
+                const safeSpec = String(cleanSpec).replace(/"/g, '&quot;');
+
+                html += `
+                <tr style="border-bottom: 1px solid #f1f5f9; background: #fff;">
+                    <td style="padding:12px 2px; text-align:center; width:30px;">
+                        <input type="checkbox" class="row-select" 
+                               data-brand="${safeBrand}" 
+                               data-itemname="${safeName}" 
+                               data-spec="${safeSpec}" 
+                               onchange="calculateOrderTotal();" 
+                               style="transform:scale(1.1); cursor:pointer;">
+                    </td>
+                    <td style="padding:12px 5px; min-width:140px;">
+                        <span class="row-spec-name" style="font-weight:800; color:#334155;">${cleanSpec}</span>
+                    </td>
+                    <td style="padding:12px 8px; color:#64748b; font-weight:600; white-space:nowrap; text-align:center;" class="row-mrp" data-mrp="${price}">
+                        ₹${price}
+                    </td>
+                    <td style="padding:12px 2px; text-align:center;">
+                        <input type="number" class="row-disc" value="0" oninput="calculateOrderTotal()" style="width:35px; text-align:center; border:1px solid #cbd5e1; border-radius:4px; padding:3px; font-size:12px;"> %
+                    </td>
+                    <td style="padding:12px 2px; text-align:center;">
+                        <div style="display:flex; align-items:center; justify-content:center; gap:2px;">
+                            <input type="number" class="row-qty" value="1" oninput="calculateOrderTotal()" style="width: 35px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding:3px; font-size:12px;">
+                            <span class="row-unit" style="font-size:9px; color:#94a3b8; font-weight:700;">pcs</span>
+                        </div>
+                    </td>
+                    <td style="padding:12px 5px; text-align:right; font-weight:900; color:#b38728; font-size:14px; white-space:nowrap;" class="row-final">
+                        ₹0
+                    </td>
+                </tr>`;
+            });
+        });
+
+        // HISTORY PUSH FOR ANDROID BACK BUTTON
+        window.history.pushState({ type: 'product' }, "product");
+
+        document.getElementById('modal-table-body').innerHTML = html;
+        document.getElementById('order-modal-overlay').style.display = "flex"; 
+
+        // Memory Logic: Keep boxes checked if they are already in the cart
+        const tableRows = document.querySelectorAll('#modal-table-body tr');
+        tableRows.forEach(row => {
+            const cb = row.querySelector('.row-select');
+            if (cb) {
+                const brand = cb.getAttribute('data-brand');
+                const itemName = cb.getAttribute('data-itemname');
+                const spec = cb.getAttribute('data-spec');
+                const itemKey = `${brand}-${itemName}-${spec}`;
+
+                if (globalCart[itemKey]) {
+                    cb.checked = true;
+                    const qtyInput = row.querySelector('.row-qty');
+                    if (qtyInput) qtyInput.value = globalCart[itemKey].qty;
+                }
+            }
+        });
+
+        calculateOrderTotal();
+    } catch (e) { console.error("Modal Error:", e); }
+}
+
+function calculateOrderTotal() {
+    let modalSubtotal = 0;
+    const rows = document.querySelectorAll('#modal-table-body tr');
+    const modalTitle = document.getElementById('modal-title').innerText;
+
+    rows.forEach(row => {
+        const checkbox = row.querySelector('.row-select');
+        if (!checkbox) return;
+
+        const brand = checkbox.getAttribute('data-brand') || 'Hatimi';
+        let itemName = checkbox.getAttribute('data-itemname');
+        if (!itemName || itemName === 'undefined') itemName = modalTitle;
+
+        let spec = checkbox.getAttribute('data-spec');
+        if (!spec || spec === 'undefined') {
+            const specSpan = row.querySelector('.row-spec-name');
+            if (specSpan) {
+                spec = specSpan.innerText.trim();
+            } else {
+                spec = "Standard"; 
+            }
+        }
+
+        const mrp = parseFloat(row.querySelector('.row-mrp').getAttribute('data-mrp')) || 0;
+        const disc = parseFloat(row.querySelector('.row-disc').value) || 0;
+        const qty = parseFloat(row.querySelector('.row-qty').value) || 1;
+
+        const discountedPrice = mrp - (mrp * (disc / 100));
+        const finalPrice = discountedPrice * qty;
+
+        row.querySelector('.row-final').innerText = '₹' + Math.round(finalPrice);
+
+        const itemKey = `${brand}-${itemName}-${spec}`;
+
+        if (checkbox.checked) {
+            modalSubtotal += finalPrice;
+            globalCart[itemKey] = {
+                name: itemName,
+                brand: brand,
+                size: spec,
+                qty: qty,
+                price: discountedPrice,
+                total: finalPrice,
+                mrpPerUnit: mrp
+            };
+        } else {
+            delete globalCart[itemKey];
+        }
+    });
+
+    document.getElementById('modal-total-amount').innerText = '₹' + Math.round(modalSubtotal);
+    refreshGlobalCart();
+}   
+
+function applyBulkDiscount() {
+    const val = document.getElementById('bulk-disc').value || 0;
+    document.querySelectorAll('.row-disc').forEach(input => input.value = val);
+    calculateOrderTotal();
+}
+
+function applyBulkUnit() {
+    const unit = document.getElementById('bulk-unit').value;
+    document.querySelectorAll('.row-unit').forEach(span => span.innerText = unit);
+}
+
+function refreshGlobalCart() {
+    let grandTotalSum = 0;
+    let totalItems = 0;
+
+    for (const key in globalCart) {
+        grandTotalSum += globalCart[key].total;
+        totalItems++;
+    }
+
+    const globalCartBar = document.getElementById('gold-cart-bar');
+    const globalTotalDisplay = document.getElementById('cart-total-amount');
+    const itemCountDisplay = document.getElementById('cartItemCount');
+
+    if (globalTotalDisplay) globalTotalDisplay.innerHTML = `<span>₹</span>${Math.round(grandTotalSum)}`;
+    if (itemCountDisplay) itemCountDisplay.innerText = `${totalItems} ITEMS SELECTED`;
+
+    if (globalCartBar) {
+        if (totalItems > 0) {
+            globalCartBar.style.cssText = "display: flex !important; z-index: 20000 !important;";
+        } else {
+            globalCartBar.style.display = "none";
+        }
+    }
+}
+
+function showCartReview() {
+    const modal = document.getElementById('cartReviewModal');
+
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.padding = "20px 20px 100px 20px"; 
+    modal.style.boxSizing = "border-box";
+
+    const scrollArea = modal.querySelector('.review-scroll-area');
+    const currentScroll = scrollArea ? scrollArea.scrollTop : 0;
+
+    let itemsHtml = "";
+    let count = 0;
+    let grandTotal = 0;
+    let grandTotalMRP = 0;
+
+    for (const key in globalCart) {
+        const item = globalCart[key];
+        const originalMRP = (item.mrpPerUnit || 0) * item.qty;
+        const rowSavings = originalMRP - item.total;
+        
+        count++;
+        grandTotal += item.total;
+        grandTotalMRP += originalMRP;
+
+        const savingsHTML = rowSavings > 0 
+            ? `<div style="margin-top:2px;">
+                 <span style="text-decoration: line-through; color: #94a3b8; font-size: 11px;">₹${originalMRP}</span>
+                 <span style="color: #15803d; font-size: 11px; font-weight: 800; margin-left: 5px;">(Save ₹${rowSavings})</span>
+               </div>` 
+            : "";
+
+        itemsHtml += `
+        <div class="review-item" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #f1f5f9;">
+            <div style="flex: 1; padding-right: 15px; min-width: 0;">
+                <div style="font-weight: 800; color: #1e293b; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 2px;">${item.brand} • ${item.size}</div>
+                ${savingsHTML}
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 15px; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #f8fafc; overflow: hidden;">
+                    <button onclick="updateReviewQty('${key}', -1, event)" style="padding: 8px 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #1e293b;">-</button>
+                    <span style="min-width: 20px; text-align: center; font-size: 13px; font-weight: 800; color: #1e293b;">${item.qty}</span>
+                    <button onclick="updateReviewQty('${key}', 1, event)" style="padding: 8px 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #1e293b;">+</button>
+                </div>
+                
+                <div style="text-align: right; min-width: 90px;">
+                    <div style="font-weight: 900; color: #1e293b; font-size: 16px;">₹${item.total.toLocaleString('en-IN')}</div>
+                    <div onclick="removeReviewItem('${key}', event)" style="font-size: 10px; color: #ef4444; cursor: pointer; font-weight: 800; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px;">REMOVE</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    const totalSavings = grandTotalMRP - grandTotal;
+    
+    modal.innerHTML = `
+        <div class="floating-cart-card" style="margin: auto; max-height: calc(100vh - 120px); display: flex; flex-direction: column;">
+            <div style="padding: 24px 24px 16px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <div>
+                    <h2 style="margin: 0; font-size: 20px; font-weight: 900; color: #1e293b;">Review Order</h2>
+                    <p style="margin: 4px 0 0; font-size: 12px; color: #64748b; font-weight: 600;">You have ${count} unique items selected</p>
+                </div>
+                <button onclick="closeCartReview()" style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; color: #64748b; display: flex; align-items: center; justify-content: center;">&times;</button>
+            </div>
+
+            <div class="review-scroll-area" style="overflow-y: auto; flex: 1; padding: 8px 0; min-height: 100px;">
+                ${count > 0 ? itemsHtml : '<div style="padding: 60px 20px; text-align: center; color: #94a3b8; font-weight: 600;">Your cart is empty.</div>'}
+            </div>
+
+            ${count > 0 ? `
+            <div style="padding: 24px; background: #fff; border-top: 1px solid #f1f5f9; text-align: center; flex-shrink: 0;">
+                ${totalSavings > 0 ? `
+                <div style="margin-bottom: 15px; padding: 10px; background: #f0fdf4; border-radius: 12px; border: 1px dashed #15803d;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; color: #15803d; font-weight: 700; text-transform: uppercase;">Total Savings</span>
+                        <span style="font-size: 16px; color: #15803d; font-weight: 900;">₹${totalSavings.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>` : ''}
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <span style="font-size: 13px; color: #64748b; font-weight: 800; text-transform: uppercase;">Total Estimate</span>
+                    <span style="font-size: 26px; color: #1e293b; font-weight: 900;">₹${grandTotal.toLocaleString('en-IN')}</span>
+                </div>
+                
+                <button onclick="sendGlobalWhatsAppOrder()" style="width: 100%; background: #b38728; color: white; border: none; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px -5px rgba(179, 135, 40, 0.4);">
+                    Send Order via WhatsApp
+                </button>
+                
+                <div onclick="clearGlobalCart(); closeCartReview();" style="margin-top: 18px; color: #94a3b8; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                    🗑️ Clear Selection
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    const newScrollArea = modal.querySelector('.review-scroll-area');
+    if (newScrollArea) newScrollArea.scrollTop = currentScroll;
+
+    // HISTORY PUSH FOR ANDROID BACK BUTTON (REVIEW LEVEL)
+    window.history.pushState({ type: 'review' }, "review");
+    
+    modal.style.display = "flex";
+}
+
+function updateReviewQty(key, change, event) {
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+
+    if (globalCart[key]) {
+        globalCart[key].qty += change;
+        
+        if (globalCart[key].qty <= 0) {
+            removeReviewItem(key, event);
+            return;
+        }
+
+        globalCart[key].total = globalCart[key].qty * globalCart[key].price;
+
+        const rows = document.querySelectorAll('#modal-table-body tr');
+        rows.forEach(row => {
+            const cb = row.querySelector('.row-select');
+            if (cb) {
+                const rowKey = `${cb.getAttribute('data-brand')}-${cb.getAttribute('data-itemname')}-${cb.getAttribute('data-spec')}`;
+                if (key === rowKey) {
+                    const qtyInput = row.querySelector('.row-qty');
+                    if (qtyInput) qtyInput.value = globalCart[key].qty;
+                }
+            }
+        });
+
+        calculateOrderTotal(); 
+        showCartReview(); 
+    }
+}
+
+function removeReviewItem(key, event) {
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+
+    const rows = document.querySelectorAll('#modal-table-body tr');
+    rows.forEach(row => {
+        const cb = row.querySelector('.row-select');
+        if (cb) {
+            const rowKey = `${cb.getAttribute('data-brand')}-${cb.getAttribute('data-itemname')}-${cb.getAttribute('data-spec')}`;
+            if (key === rowKey) cb.checked = false;
+        }
+    });
+
+    delete globalCart[key];
+    calculateOrderTotal();
+
+    if (Object.keys(globalCart).length === 0) closeCartReview();
+    else showCartReview();
+}
+
+function closeCartReview() {
+    document.getElementById('cartReviewModal').style.display = "none";
+}
+
+function clearGlobalCart(event) {
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+
+    globalCart = {};
+    
+    document.querySelectorAll('.row-select').forEach(box => box.checked = false);
+    document.querySelectorAll('.row-qty').forEach(input => input.value = 1);
+    document.querySelectorAll('.row-disc').forEach(input => input.value = 0);
+    
+    calculateOrderTotal();
+    refreshGlobalCart();
+
+    if (typeof closeCartReview === "function") closeCartReview();
+}
+
+function sendGlobalWhatsAppOrder() {
+    let msg = "📦 *NEW ORDER - PRIME DESIGN / FABRICATION* 📦\n";
+    msg += "----------------------------------------\n\n";
+    
+    let finalTotal = 0;
+    let totalMRP = 0; 
+
+    for (const key in globalCart) {
+        const item = globalCart[key];
+        let titleLine = item.brand && item.brand.trim() !== "" ? `*${item.brand} - ${item.name}*` : `*${item.name}*`;
+        
+        msg += `🔹 ${titleLine}\n`;
+        if (item.finish && item.finish !== "undefined" && item.finish !== "") msg += `     Finish: ${item.finish}\n`;
+        
+        msg += `     Size: ${item.size}\n`;
+        msg += `     Qty: ${item.qty} pcs\n`;
+        
+        const unitMRP = item.mrpPerUnit || item.price;
+        const rowMRP = unitMRP * item.qty;
+        
+        msg += `     Price: ₹${item.price.toLocaleString('en-IN')} (~₹${unitMRP.toLocaleString('en-IN')}~)\n`;
+        msg += `     Subtotal: *₹${item.total.toLocaleString('en-IN')}*\n\n`;
+        
+        finalTotal += item.total;
+        totalMRP += rowMRP; 
+    }
+
+    const totalSaved = totalMRP - finalTotal;
+
+    msg += `----------------------------------------\n`;
+    msg += `💰 Total MRP: ₹${totalMRP.toLocaleString('en-IN')}\n`;
+    
+    if (totalSaved > 0) msg += `🎉 *YOU SAVED: ₹${totalSaved.toLocaleString('en-IN')}*\n`;
+
+    msg += `🧾 *NET PAYABLE: ₹${finalTotal.toLocaleString('en-IN')}*\n`;
+    msg += `----------------------------------------\n`;
+    msg += `_Order generated via Hatimi Digital Catalog_`;
+
+    const phone = "918109539453"; 
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function openZoom(event, name, imgSrc) {
+    if (event) event.stopPropagation();
+    document.getElementById('enlargedImg').src = imgSrc;
+    document.getElementById('lightboxCaption').innerText = name;
+    document.getElementById('imageLightbox').style.display = "flex";
+}
+
+function filterProducts() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    let visibleCount = 0; // Create a counter
+
+    document.querySelectorAll('.product-card').forEach(c => {
+        // If the card matches the search, show it and increase the counter
+        if (c.innerText.toLowerCase().includes(q)) {
+            c.style.display = "flex"; // Use flex to maintain the button alignment
+            visibleCount++;
+        } else {
+            c.style.display = "none";
+        }
+    });
+
+    // Update the badge with the new search count!
+    document.getElementById('productCountDisplay').innerText = visibleCount;
+}
+
+function filterCategoryCards(filterType, btn) {
+    const filterContainer = btn.parentElement;
+    filterContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const grid = filterContainer.nextElementSibling;
+    const cards = grid.querySelectorAll('.product-card');
+
+    cards.forEach(card => {
+        const searchText = card.getAttribute('data-search-text') || "";
+        card.style.display = (filterType === 'All' || searchText.includes(filterType.toLowerCase())) ? 'flex' : 'none';
+    });
+}
+
+function closeModal() {
+    const modal = document.getElementById('order-modal-overlay');
+    if (modal) modal.style.display = "none";
+    if (window.history.state && window.history.state.type === 'product') window.history.back();
+    refreshGlobalCart();
+}
+
+window.onclick = function(event) {
+    const modalOverlay = document.getElementById('order-modal-overlay');
+    if (event.target === modalOverlay) modalOverlay.style.display = "none";
+}
+
+// --- MASTER BACK BUTTON CONTROLLER ---
+let isBotOpen = false;
+
+setInterval(function() {
+    const tarsWidget = document.getElementById('tars-widget-container');
+    if (tarsWidget && tarsWidget.clientHeight > 100) {
+        if (!isBotOpen) {
+            isBotOpen = true;
+            window.history.pushState({ type: 'bot' }, "bot");
+        }
+    } else {
+        isBotOpen = false;
+    }
+}, 300);
+
+window.addEventListener('popstate', function(event) {
+    if (isBotOpen) {
+        const tarsFab = document.querySelector('#tars-widget-fab, .tars-fab');
+        if (tarsFab) tarsFab.click();
+        else {
+            const tarsWidget = document.getElementById('tars-widget-container');
+            if(tarsWidget) tarsWidget.style.display = "none";
+        }
+        isBotOpen = false;
+        return; 
+    }
+
+    const reviewModal = document.getElementById('cartReviewModal');
+    if (reviewModal && reviewModal.style.display === "flex") {
+        if (typeof closeCartReview === "function") {
+            reviewModal.style.display = "none";
+            refreshGlobalCart();
+        }
+        return;
+    }
+
+    const productModal = document.getElementById('order-modal-overlay');
+    if (productModal && productModal.style.display === "flex") {
+        productModal.style.display = "none";
+        refreshGlobalCart();
+        return;
+    }
+});
+// START
+loadFabricationData();
+</script>
+
+<script src="hatimi-bot.js"></script>  
+<div id="loginModal" class="modal" style="display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 9999;">
+    <div class="modal-content" style="max-width: 400px; text-align: center; border: 2px solid var(--primary-gold); padding: 40px 30px; border-radius: 15px;">
+        <span class="close-modal" onclick="closeLoginModal()" style="position: absolute; right: 20px; top: 10px; cursor: pointer; font-size: 24px;">&times;</span>
+        <div style="font-size: 40px; margin-bottom: 10px;">🔐</div>
+        <h2 style="color: var(--primary-gold); margin-bottom: 5px;">Admin Access</h2>
+        <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Enter credentials to open Manager Dashboard.</p>
+        <input type="password" id="adminPassInput" placeholder="Enter Password" style="width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; font-size: 16px; outline: none; text-align: center; box-sizing: border-box;">
+        <button onclick="verifyAdmin()" style="width: 100%; background: var(--primary-gold); color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">LOGIN</button>
+        <p id="loginError" style="color: #e74c3c; font-size: 13px; margin-top: 15px; display: none;">❌ Incorrect password, try again.</p>
+    </div>
+</div>
+<script>
+    // Force-connect the title to the login function
+    document.addEventListener('DOMContentLoaded', function() {
+        const title = document.getElementById('adminTitle');
+        if (title) {
+            title.addEventListener('click', function() {
+                document.getElementById('loginModal').style.display = 'flex';
+                document.getElementById('adminPassInput').focus();
+            });
+        }
+    });
+
+    function closeLoginModal() { 
+        document.getElementById('loginModal').style.display = 'none'; 
+        document.getElementById('loginError').style.display = 'none'; 
+        document.getElementById('adminPassInput').value = ''; 
+    }
+
+    function verifyAdmin() {
+        const passInput = document.getElementById('adminPassInput');
+        if (passInput.value === "hatimi786") { 
+            sessionStorage.setItem('managerAuth', 'true'); 
+            window.location.href = "fabrication-manager.html"; 
+        } else { 
+            document.getElementById('loginError').style.display = 'block'; 
+            passInput.style.borderColor = '#e74c3c'; 
+            passInput.value = ''; 
+        }
+    }
+
+    // Allow "Enter" key
+    document.getElementById('adminPassInput').addEventListener("keypress", function(e) { 
+        if (e.key === "Enter") verifyAdmin(); 
+    });
+</script>
+</body>
+</html>
