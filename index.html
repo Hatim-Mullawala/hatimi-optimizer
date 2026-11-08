@@ -72,16 +72,19 @@
     .card .status { font-size: 7pt !important; color: black !important; }
 }
 
-/* Share PDF: A4 Canvas with 4x6 Slip Box */
-#results.pdf-export { width: 210mm !important; background: white !important; padding-top: 3mm !important; }
+/* Share PDF: Phone-friendly 4x6 capture box placed onto A4 by jsPDF */
+#results.pdf-export { 
+    width: 370px !important; 
+    max-width: 370px !important; 
+    background: white !important; 
+    padding: 4px !important; 
+    margin: 0 !important; 
+}
 .pdf-export .screen-only { display: none !important; }
-
-/* Use margin-left/right: auto for Center-Loading Printer, or 0 for Left-Edge Printer */
-.pdf-export .print-header, .pdf-export .cards-grid { width: 98mm !important; margin-left: auto !important; margin-right: auto !important; }
-
+.pdf-export .print-header, .pdf-export .cards-grid { width: 100% !important; margin: 0 !important; }
 .pdf-export .print-header { display: block !important; text-align: center; margin-bottom: 6px !important; }
-.pdf-export .print-header h2 { font-size: 15pt; margin: 0; color: black; }
-.pdf-export .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+.pdf-export .print-header h2 { font-size: 15pt; margin: 0; color: black !important; }
+.pdf-export .cards-grid { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 4px; }
 .pdf-export .cards-grid.pipes-1, .pdf-export .cards-grid.pipes-2 { grid-template-columns: 1fr; }
 .pdf-export .cards-grid.pipes-3 .card:first-child { grid-column: span 2; }
 .pdf-export .card { border: 2px solid black !important; padding: 4px !important; background: white !important; border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important; page-break-inside: avoid; }
@@ -303,36 +306,48 @@ async function sharePlan() {
     }
 
     btn.innerText = '⏳ PREPARING PDF...';
+    
+    // Scroll to top temporarily so html2canvas never captures a blank scrolled area
+    const savedScroll = window.scrollY;
+    window.scrollTo(0, 0);
     res.classList.add('pdf-export');
 
-   const opt = {
-        margin: 0,
+    const opt = {
+        // Margins in mm: [Top, Left, Bottom, Right]
+        // 56mm Left/Right centers a 98mm (4-inch) slip on a 210mm A4 sheet
+        margin: [5, 56, 5, 56],
         filename: 'Hatimi-Cutting-Plan.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // A4 sheet with 4x6 slip inside
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            scrollY: 0, 
+            scrollX: 0,
+            windowWidth: 370 
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
         const pdfBlob = await html2pdf().set(opt).from(res).output('blob');
         res.classList.remove('pdf-export');
+        window.scrollTo(0, savedScroll);
         btn.innerText = '📲 SHARE / PRINT CUTTING PLAN';
 
         const file = new File([pdfBlob], 'Hatimi-Cutting-Plan.pdf', { type: 'application/pdf' });
 
-        // Opens native mobile Share Sheet (Print, Open as PDF, WhatsApp, Drive, etc.)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
                 title: 'Hatimi Hardware - Cutting Plan',
                 files: [file]
             });
         } else {
-            // Fallback for desktop browsers: opens PDF directly in a new tab to print/save
             const pdfUrl = URL.createObjectURL(pdfBlob);
             window.open(pdfUrl, '_blank');
         }
     } catch (err) {
         res.classList.remove('pdf-export');
+        window.scrollTo(0, savedScroll);
         btn.innerText = '📲 SHARE / PRINT CUTTING PLAN';
     }
 }
