@@ -49,31 +49,45 @@
         .summary-card p { margin: 0; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #bbb; }
         .summary-card .total-val { font-size: 1.8rem; font-weight: 900; color: white; margin-top: 4px; }
         .summary-card .total-val span { color: var(--gold); }
-        @media print {
-            @page { size: 4in 6in; margin: 2mm; }
-            header, .section, button, .btn-calc, .no-print-zone, .screen-only { display: none !important; }
-            #results { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 4px; width: 100%; }
-            #results:has(.card:nth-child(1):last-child), #results:has(.card:nth-child(2):last-child) { grid-template-columns: 1fr; }
-            #results:has(.card:nth-child(3):last-child) .card:first-child { grid-column: span 2; }
-            #results:has(.card:nth-child(4)) { grid-template-columns: repeat(2, 1fr) !important; }
-            .card { border: 2px solid black !important; padding: 4px !important; background: white !important; page-break-inside: avoid; border-radius: 0 !important; box-shadow: none !important; border-top: 2px solid black !important; }
-            .card .pick { font-size: 16pt !important; line-height: 1; color: black; }
-            .card .cut-line { font-size: 11pt !important; border-top: 1px solid black; border-bottom: 1px solid black; margin: 3px 0; padding: 2px 0; color: black; }
-            .card .status { font-size: 7pt; color: black; }
-            .print-header { display: block !important; text-align: center; margin-bottom: 10px; }
-            .print-header h2 { font-size: 16pt; margin: 0; color: black; }
-        }
-        /* Formats the 4x6 slip when generating PDF for Share Menu */
+       /* Direct Print: A4 Page with 4x6 Slip Box */
+@media print {
+    @page { size: A4 portrait; margin: 0; }
+    header, .section, button, .btn-calc, .no-print-zone, .screen-only { display: none !important; }
+    body, .dashboard, .content { background: white !important; margin: 0 !important; padding: 0 !important; width: 210mm !important; max-width: 210mm !important; }
+    
+    /* 4x6 Slip Box inside A4 (Use margin: 2mm auto for Center Tray, or margin: 2mm 0 for Side Tray) */
+    .print-header, .cards-grid { width: 98mm !important; margin-left: auto !important; margin-right: auto !important; }
+    
+    .print-header { display: block !important; text-align: center; padding-top: 3mm; margin-bottom: 6px !important; }
+    .print-header h2 { font-size: 15pt; margin: 0; color: black; }
+    
+    .cards-grid { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+    .cards-grid.pipes-1, .cards-grid.pipes-2 { grid-template-columns: 1fr; }
+    .cards-grid.pipes-3 .card:first-child { grid-column: span 2; }
+    
+    .card { border: 2px solid black !important; padding: 4px !important; background: white !important; page-break-inside: avoid; border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important; }
+    .card .pick { font-size: 15pt !important; line-height: 1; color: black !important; }
+    .card .cut-line { font-size: 10pt !important; border-top: 1px solid black !important; border-bottom: 1px solid black !important; margin: 3px 0 !important; padding: 2px 0 !important; color: black !important; }
+    .card .cut-line b { color: black !important; font-size: 11pt !important; }
+    .card .status { font-size: 7pt !important; color: black !important; }
+}
+
+/* Share PDF: A4 Canvas with 4x6 Slip Box */
+#results.pdf-export { width: 210mm !important; background: white !important; padding-top: 3mm !important; }
 .pdf-export .screen-only { display: none !important; }
-.pdf-export .print-header { display: block !important; text-align: center; margin-bottom: 8px; }
-.pdf-export .print-header h2 { font-size: 16pt; margin: 0; color: black; }
-.pdf-export .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; }
+
+/* Use margin-left/right: auto for Center-Loading Printer, or 0 for Left-Edge Printer */
+.pdf-export .print-header, .pdf-export .cards-grid { width: 98mm !important; margin-left: auto !important; margin-right: auto !important; }
+
+.pdf-export .print-header { display: block !important; text-align: center; margin-bottom: 6px !important; }
+.pdf-export .print-header h2 { font-size: 15pt; margin: 0; color: black; }
+.pdf-export .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
 .pdf-export .cards-grid.pipes-1, .pdf-export .cards-grid.pipes-2 { grid-template-columns: 1fr; }
 .pdf-export .cards-grid.pipes-3 .card:first-child { grid-column: span 2; }
-.pdf-export .card { border: 2px solid black !important; padding: 6px !important; background: white !important; border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important; page-break-inside: avoid; }
-.pdf-export .card .pick { font-size: 16pt !important; line-height: 1; color: black !important; }
-.pdf-export .card .cut-line { font-size: 11pt !important; border-top: 1px solid black !important; border-bottom: 1px solid black !important; margin: 4px 0 !important; padding: 3px 0 !important; color: black !important; }
-.pdf-export .card .cut-line b { color: black !important; font-size: 12pt !important; }
+.pdf-export .card { border: 2px solid black !important; padding: 4px !important; background: white !important; border-radius: 0 !important; box-shadow: none !important; margin-bottom: 0 !important; page-break-inside: avoid; }
+.pdf-export .card .pick { font-size: 15pt !important; line-height: 1; color: black !important; }
+.pdf-export .card .cut-line { font-size: 10pt !important; border-top: 1px solid black !important; border-bottom: 1px solid black !important; margin: 3px 0 !important; padding: 2px 0 !important; color: black !important; }
+.pdf-export .card .cut-line b { color: black !important; font-size: 11pt !important; }
 .pdf-export .card .status { font-size: 7pt !important; color: black !important; }
     </style>
 </head>
@@ -291,12 +305,12 @@ async function sharePlan() {
     btn.innerText = '⏳ PREPARING PDF...';
     res.classList.add('pdf-export');
 
-    const opt = {
-        margin: 2,
+   const opt = {
+        margin: 0,
         filename: 'Hatimi-Cutting-Plan.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: [101.6, 152.4], orientation: 'portrait' } // 4x6 inches
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // A4 sheet with 4x6 slip inside
     };
 
     try {
