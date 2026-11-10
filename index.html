@@ -149,9 +149,18 @@
 
 <script>
     function toggleStock() { document.getElementById('ex_fields').style.display = document.getElementById('cat').value === '1h' ? 'block' : 'none'; }
-    function addScrap() { const i = document.createElement('input'); i.className='sc'; i.type='number'; i.placeholder="Inches"; i.style.marginTop="10px"; document.getElementById('scraps').appendChild(i); }
+    function addScrap() { 
+        const i = document.createElement('input'); i.className='sc'; i.type='number'; i.placeholder="Inches"; i.style.marginTop="10px"; 
+        document.getElementById('scraps').appendChild(i); 
+        i.focus(); // Instantly opens the keyboard
+    }
     function setUnit(btn, unit) { Array.from(btn.parentElement.children).forEach(b => b.classList.remove('active')); btn.classList.add('active'); btn.parentElement.dataset.unit = unit; }
-    function addNeed() { const d = document.createElement('div'); d.className='req-row'; d.innerHTML = `<input type="number" class="sz" placeholder="Size"><input type="number" class="qty" value="1"><div class="unit-toggle" data-unit="in"><button class="unit-btn active" onclick="setUnit(this, 'in')">IN</button><button class="unit-btn" onclick="setUnit(this, 'ft')">FT</button></div>`; document.getElementById('needs').appendChild(d); }
+    function addNeed() { 
+        const d = document.createElement('div'); d.className='req-row'; 
+        d.innerHTML = `<input type="number" class="sz" placeholder="Size"><input type="number" class="qty" value="1"><div class="unit-toggle" data-unit="in"><button class="unit-btn active" onclick="setUnit(this, 'in')">IN</button><button class="unit-btn" onclick="setUnit(this, 'ft')">FT</button></div>`; 
+        document.getElementById('needs').appendChild(d); 
+        d.querySelector('.sz').focus(); // Instantly opens the keyboard
+    }
     
     function findPerfect(target, currentNeeds) {
         let best = null;
